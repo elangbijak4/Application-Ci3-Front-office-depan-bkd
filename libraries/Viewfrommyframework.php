@@ -287,12 +287,22 @@ class Viewfrommyframework {
                                 loading.fadeOut();
                                 tampilkan.html(data);
                                 tampilkan.fadeIn(2000);
+                                $.post('".site_url('/Frontoffice/proses_baca')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                function(data_baca,status){
+                                    //BAGIAN MENCATAT LOG KE BANKDATA
+                                    $.post('".$this->CI->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_baca,{ data:data_baca},
+                                    function(data_log,status_log){
+                                    });
+                                });
+
+                                //Bagian membaca di modal yang besar
                                 loading1.fadeOut();
                                 ";
-                                if($surat[sizeof($surat)-1]=='pdf'||$surat[sizeof($surat)-1]=='png'||$surat[sizeof($surat)-1]=='jpg'||$surat[sizeof($surat)-1]=='html'||$surat[sizeof($surat)-1]=='htm'||$surat[sizeof($surat)-1]=='bmp'||$surat[sizeof($surat)-1]=='gif'||$surat[sizeof($surat)-1]=='mp4'||$surat[sizeof($surat)-1]=='mp3'||$surat[sizeof($surat)-1]=='vid'||$surat[sizeof($surat)-1]=='wav') echo "            tampilkan1.html(data);";
+                                if($surat[sizeof($surat)-1]=='pdf'||$surat[sizeof($surat)-1]=='png'||$surat[sizeof($surat)-1]=='jpg'||$surat[sizeof($surat)-1]=='html'||$surat[sizeof($surat)-1]=='htm'||$surat[sizeof($surat)-1]=='bmp'||$surat[sizeof($surat)-1]=='gif'||$surat[sizeof($surat)-1]=='mp4'||$surat[sizeof($surat)-1]=='mp3'||$surat[sizeof($surat)-1]=='vid'||$surat[sizeof($surat)-1]=='wav') echo "tampilkan1.html(data);";
 					echo "		});
                         });
                         ";
+
                     echo "
                         $(\"#berkasSurat$keyisi\").click(function(){
 							var loading = $(\"#pra_baca_surat_new\");

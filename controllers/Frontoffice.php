@@ -121,9 +121,11 @@ class Frontoffice extends CI_Controller {
 							$(\"#pending_area$isi_key\").click(function(){
 								var loading = $(\"#pra_verifikasi_sedang\");
 								var tampilkan = $(\"#penampil_verifikasi_sedang\");
+								var message_pending_var = $(\"#message_pending\").val();
+
 								tampilkan.hide();
 								loading.fadeIn(); 
-								$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\" },
+								$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\",message_pending:message_pending_var},
 								function(data,status){
 									//BAGIAN MENCATAT LOG KE BANKDATA
 									$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
@@ -156,6 +158,7 @@ class Frontoffice extends CI_Controller {
 		//echo "OK BRO, INI TEMPAT PENDING";
 		$key=$_POST['key'];
 		$isi_key=$_POST['data'];
+		$message_pending=$_POST['message_pending'];
 		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
 		if(!$surat){
 			alert('Surat yang dimaksud tidak tercatat');
@@ -187,6 +190,14 @@ class Frontoffice extends CI_Controller {
 		$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
 		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
 
+		//Update keterangan alasan dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='keterangan';
+		$data[$kolom_target]=$message_pending;
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+
+		$kiriman[18]=$message_pending;
 		$kiriman[19]='dipending';
 		$kiriman[23]=$data[$kolom_target];
 		
@@ -202,18 +213,20 @@ class Frontoffice extends CI_Controller {
 			<div style='padding:5px;'>
 			<form>
 				<label for='message_pending'>Keterangan surat dipending:</label>
-				<textarea class='form-group' id='message_pending' name='message_pending' style='width:100%; height:200px;'></textarea>
+				<textarea class='form-group' id='message_pending2' name='message_pending' style='width:100%; height:200px;'></textarea>
 			</form>
-			<button class=\"btn btn-success\" id=\"pending_area$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
+			<button class=\"btn btn-success\" id=\"pending_area2$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
 			</div>
 			<script>
 				$(document).ready(function(){
-					$(\"#pending_area$isi_key\").click(function(){
+					$(\"#pending_area2$isi_key\").click(function(){
 						var loading = $(\"#pra_verifikasi_sedang\");
 						var tampilkan = $(\"#penampil_verifikasi_sedang\");
+						var message_pending_var = $(\"#message_pending2\").val();
+
 						tampilkan.hide();
 						loading.fadeIn(); 
-						$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\" },
+						$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\",message_pending:message_pending_var},
 						function(data,status){
 							//BAGIAN MENCATAT LOG KE BANKDATA
 							$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},

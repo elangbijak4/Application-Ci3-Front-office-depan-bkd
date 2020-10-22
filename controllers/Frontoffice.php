@@ -254,15 +254,192 @@ class Frontoffice extends CI_Controller {
 	}
 
 	public function tolak(){
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
+				}
+			}
+
+			if($data_post['status_surat']['nilai']=='diteruskan'){
+				echo "
+				<div class=\"alert alert-info\">
+				<strong>Maaf!</strong> Surat ini telah <strong>diteruskan</strong> sebelumnya, sehingga tidak bisa lagi ditolak.
+				</div>
+				";
+			} else if($data_post['status_surat']['nilai']=='dipending'){
+				echo "
+				<div class=\"alert alert-info\">
+				<strong>Maaf!</strong> Surat ini telah <strong>dipending</strong> sebelumnya.
+				</div>
+				<button class=\"btn btn-info\" id=\"ubah_ke_tolak$isi_key\" style=\"width:100%;\"><i class='fas fa-stop fa-sm text-white-100'></i> Ubah ke tolak...</button>
+				
+				<script>
+				$(document).ready(function(){
+					$(\"#ubah_ke_tolak$isi_key\").click(function(){
+						var loading = $(\"#pra_verifikasi_sedang\");
+						var tampilkan = $(\"#penampil_verifikasi_sedang\");
+						tampilkan.hide();
+						loading.fadeIn(); 
+						$.post('".site_url('/Frontoffice/tolak_ok')."',{key:\"".$key."\",data:\"".$isi_key."\" },
+						function(data,status){
+							loading.fadeOut();
+							tampilkan.html(data);
+							tampilkan.fadeIn(2000);
+						});
+					});
+				});
+				</script>
+				";
+			} else{
+				echo "
+					<div style='padding:5px;'>
+					<form>
+						<label for='message_pending'>Keterangan surat ditolak:</label>
+						<textarea class='form-group' id='message_tolak' name='message_tolak' style='width:100%; height:200px;'></textarea>
+					</form>
+					<button class=\"btn btn-success\" id=\"tolak_area$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Tolak</button>
+					</div>
+					<script>
+						$(document).ready(function(){
+							$(\"#tolak_area$isi_key\").click(function(){
+								var loading = $(\"#pra_verifikasi_sedang\");
+								var tampilkan = $(\"#penampil_verifikasi_sedang\");
+								var message_tolak_var = $(\"#message_tolak\").val();
+		
+								tampilkan.hide();
+								loading.fadeIn(); 
+								$.post('".site_url('/Frontoffice/proses_tolak')."',{key:\"$key\",data:\"$isi_key\",message_tolak:message_tolak_var},
+								function(data,status){
+									//BAGIAN MENCATAT LOG KE BANKDATA
+									$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
+									function(data_log,status_log){
+									});
+									alert('Status surat berubah menjadi ditolak...')
+		
+									//BAGIAN REFRESH PAGE
+									document.getElementById('close_ok_sedang').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+									var loading1 = $(\"#pra_tabel\");
+									var tampilkan1 = $(\"#penampil_tabel\");
+									tampilkan1.hide();
+									loading1.fadeIn(); 
+									$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
+									function(data_refresh,status_refresh){
+										loading1.fadeOut();
+										tampilkan1.html(data_refresh);
+										tampilkan1.fadeIn(2000);
+									});
+								});
+							});
+						});
+					</script>
+				";
+			}
+		}
+	}
+	
+	public function tolak_ok(){
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
 		echo "
-		<div style='padding:5px;'>
-		<form>
-			<label for='message_tolak'>Keterangan surat dipending:</label>
-			<textarea class='form-group' id='message_tolak' name='message_tolak' style='width:100%; height:200px;'></textarea>
-		</form>
-		<button class=\"btn btn-sm btn-danger\" id=\"tolak_area\" style=\"width:100%;\">Tolak</button>
-		</div>
+			<div style='padding:5px;'>
+			<form>
+				<label for='message_pending'>Keterangan surat ditolak:</label>
+				<textarea class='form-group' id='message_tolak2' name='message_tolak' style='width:100%; height:200px;'></textarea>
+			</form>
+			<button class=\"btn btn-success\" id=\"tolak_area2$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Tolak</button>
+			</div>
+			<script>
+				$(document).ready(function(){
+					$(\"#tolak_area2$isi_key\").click(function(){
+						var loading = $(\"#pra_verifikasi_sedang\");
+						var tampilkan = $(\"#penampil_verifikasi_sedang\");
+						var message_tolak_var = $(\"#message_tolak2\").val();
+
+						tampilkan.hide();
+						loading.fadeIn(); 
+						$.post('".site_url('/Frontoffice/proses_tolak')."',{key:\"$key\",data:\"$isi_key\",message_tolak:message_tolak_var},
+						function(data,status){
+							//BAGIAN MENCATAT LOG KE BANKDATA
+							$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
+							function(data_log,status_log){
+							});
+							alert('Status surat berubah menjadi ditolak...')
+
+							//BAGIAN REFRESH PAGE
+							document.getElementById('close_ok_sedang').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+							var loading1 = $(\"#pra_tabel\");
+							var tampilkan1 = $(\"#penampil_tabel\");
+							tampilkan1.hide();
+							loading1.fadeIn(); 
+							$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
+							function(data_refresh,status_refresh){
+								loading1.fadeOut();
+								tampilkan1.html(data_refresh);
+								tampilkan1.fadeIn(2000);
+							});
+						});
+					});
+				});
+			</script>
 		";
+	}
+
+	public function proses_tolak(){
+		//echo "OK BRO, INI TEMPAT PENDING";
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
+		$message_tolak=$_POST['message_tolak'];
+		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
+				}
+			}
+
+			$kiriman=array();
+			foreach($data_post as $key_k=>$k){
+					array_push($kiriman,$k['nilai']);
+				}
+		}
+
+		//Update status surat ke status=dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='status_surat';
+		$data[$kolom_target]='ditolak';
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+		
+		//Update timestamp_dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='timestamp_tolak';
+		$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+
+		//Update keterangan alasan dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='keterangan';
+		$data[$kolom_target]=$message_tolak;
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+
+		$kiriman[18]=$message_tolak;
+		$kiriman[19]='ditolak';
+		$kiriman[23]=$data[$kolom_target];
+		
+		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
+		echo $data_rekord_terenkripsi;
 	}
 	
 	public function verifikasi_new_cara_1(){

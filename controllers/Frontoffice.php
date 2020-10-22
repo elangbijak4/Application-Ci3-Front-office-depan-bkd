@@ -40,108 +40,188 @@ class Frontoffice extends CI_Controller {
 	}
 
 	//===========================================TAMBAHAN UNTUK PERUBAHAN DASHBOARD ADMIN==================================================
-	public function tampilkan_rincian_surat_frontoffice2($size=NULL){
-		echo "OK BRO MASUUUUK";
-	}
+	
 
 	public function tampilkan_rincian_surat_frontoffice($size=NULL){
-		//echo "OK BRO ".$_POST['key']." ====> ". $_POST['data'];
-		
 		$key=$_POST['key'];
 		$isi_key=$_POST['data'];
 		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
-		//print_r($surat);
-
 		
 		foreach ($surat[0] as $key1=>$isi) {
 			if(is_string($key1)){
 				echo "<span style=\"font-weight:bold;\">".ucwords(implode(' ',explode('_',$key1)))."</span>: ".$isi."<br>";
 			}
 		} 
+	}
 
-		/*
-		echo "
-		<td>
-		<div class=\"rincian_surat4$keyisi\">
-		<button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\"  style=\"width:100px;\" id=\"tutup_detail$keyisi\"><i class='fas fa-eye-slash fa-sm text-white-100'></i> Tutup</button><br>
-		</div>
-		</td>
-		<td colspan=".$size.">
-		<div class=\"rincian_surat4$keyisi\">
-		<center>
-		OK BRO ".$_POST['key']." ====> ". $_POST['data']."
-		</center>
-		</div>
-		</td>
+	/**
+	 * bagimana logikanya kalo pending?
+	 * pertama tarik dulu dari basisdata rekord yang mau dipending
+	 * kemudian cek:
+	 * apakah sudah diteruskan?
+	 * kalau sudah maka sampaikan bahwa surat ini sudah diteruskan, tidak bisa dipending lagi. ga ada tombol sama sekali kecuali close.
+	 * kalau belum cek apakah sudah ditolak? kalau iya maka sampaikan bahwa surat ini sudah ditolak.
+	 * munculkan tombol "ubah ke pending"
+	 * jika tombol di klik maka dia menampilkan form keterangan di bawah beserta tombol pending.
+	 */	
+	public function pending(){
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
+				}
+			}
 
+			if($data_post['status_surat']['nilai']=='diteruskan'){
+				echo "
+				<div class=\"alert alert-info\">
+				<strong>Maaf!</strong> Surat ini telah <strong>diteruskan</strong> sebelumnya, sehingga tidak bisa lagi dipending.
+				</div>
+				";
+			} else if($data_post['status_surat']['nilai']=='ditolak'){
+				echo "
+				<div class=\"alert alert-info\">
+				<strong>Maaf!</strong> Surat ini telah <strong>ditolak</strong> sebelumnya.
+				</div>
+				<button class=\"btn btn-info\" id=\"ubah_ke_pending$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Ubah ke pending...</button>
+				
+				<script>
+				$(document).ready(function(){
+					$(\"#ubah_ke_pending$isi_key\").click(function(){
+						var loading = $(\"#pra_verifikasi_sedang\");
+						var tampilkan = $(\"#penampil_verifikasi_sedang\");
+						tampilkan.hide();
+						loading.fadeIn(); 
+						$.post('".site_url('/Frontoffice/pending_ok')."',{key:\"".$key."\",data:\"".$isi_key."\" },
+						function(data,status){
+							loading.fadeOut();
+							tampilkan.html(data);
+							tampilkan.fadeIn(2000);
+						});
+					});
+				});
+				</script>
+				";
+			} else{
+				echo "
+					<div style='padding:5px;'>
+					<form>
+						<label for='message_pending'>Keterangan surat dipending:</label>
+						<textarea class='form-group' id='message_pending' name='message_pending' style='width:100%; height:200px;'></textarea>
+					</form>
+					<button class=\"btn btn-success\" id=\"pending_area$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
+					</div>
+					<script>
+						$(document).ready(function(){
+							$(\"#pending_area$isi_key\").click(function(){
+								var loading = $(\"#pra_verifikasi_sedang\");
+								var tampilkan = $(\"#penampil_verifikasi_sedang\");
+								tampilkan.hide();
+								loading.fadeIn(); 
+								$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\" },
+								function(data,status){
+									//BAGIAN MENCATAT LOG KE BANKDATA
+									$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
+									function(data_log,status_log){
+									});
+
+									//BAGIAN REFRESH PAGE
+									//document.getElementById('close_ok').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+									var loading1 = $(\"#pra_tabel\");
+									var tampilkan1 = $(\"#penampil_tabel\");
+									tampilkan1.hide();
+									loading1.fadeIn(); 
+									$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
+									function(data_refresh,status_refresh){
+										loading1.fadeOut();
+										tampilkan1.html(data_refresh);
+										tampilkan1.fadeIn(2000);
+									});
+								});
+							});
+						});
+					</script>
+					";
+			}
+		}
+	}
+
+	public function proses_pending(){
+		//echo "OK BRO, INI TEMPAT PENDING";
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
+		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
+				}
+			}
+
+			$kiriman=array();
+			foreach($data_post as $key_k=>$k){
+					array_push($kiriman,$k['nilai']);
+				}
+		}
+
+		//Update status surat ke status=dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='status_surat';
+		$data[$kolom_target]='dipending';
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
 		
-		<script>
-		$(\"#tutup_detail$keyisi\").click(function(){
-			var tampilkan4 = $(\".rincian_surat4$keyisi\");
-			//var tampilkan5 = $(\"#rincian_surat5$keyisi\");
-			tampilkan4.hide();
-			//tampilkan5.hide();
-			tampilkan4.html('');
-		});
-		</script>
-		";
-		*/
+		//Update timestamp_dipending:
+		$kolom_rujukan['nama_kolom']=$key;
+		$kolom_rujukan['nilai']=$isi_key;
+		$kolom_target='timestamp_dipending';
+		$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
+		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+
+		$kiriman[19]='dipending';
+		$kiriman[23]=$data[$kolom_target];
+		
+		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
+		echo $kiriman;
 	}
 	
-	public function pending(){
+	public function pending_ok(){
 		$key=$_POST['key'];
 		$isi_key=$_POST['data'];
 		echo "
-		<div style='padding:5px;'>
-		<form>
-			<label for='message_pending'>Keterangan surat dipending:</label>
-			<textarea class='form-group' id='message_pending' name='message_pending' style='width:100%; height:200px;'></textarea>
-		</form>
-		<button class=\"btn btn-success\" id=\"pending_area$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
-		</div>
-		<script>
-			$(document).ready(function(){
-				$(\"#pending_area$isi_key\").click(function(){
-					var loading = $(\"#pra_verifikasi\");
-					var tampilkan = $(\"#penampil_verifikasi\");
-					tampilkan.hide();
-					loading.html('Mohon ditunggu, data sedang proses kirim...sending..<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->config->item('style_progres_bulat_admin')."></i>');
-					loading.fadeIn(); 
-					$.post('".$this->config->item('link_sekretariat').'index.php/Frontoffice/coba_kirim_new'."',{key:\"\",data_post_enkrip_hex:\"\" },
-					function(data,status){
-						loading.fadeOut();
-						tampilkan.html(data);
-						tampilkan.fadeIn(2000);
-						alert(data);
-						if(data=='Surat sukses terkirim'){
-							$.post('".site_url('/Frontoffice/update_status_terkirim_dll/').$isi_key."',{key_status:\"okbro\",data_status:\"okbro\" },
-							function(data_status_balik,status_status){
-								//BAGIAN MENCATAT LOG KE BANKDATA
-								$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_status_balik,{ data_status_balik:data_status_balik},
-								function(data_log,status_log){
-									//alert(data_log);
-								});
-
-								//BAGIAN REFRESH PAGE
-								/*$(\"#modal_verifikasi .close\").click(); //DON'T WORK PERFECTLY*/
-								document.getElementById('close_ok').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
-								var loading1 = $(\"#pra_tabel\");
-								var tampilkan1 = $(\"#penampil_tabel\");
-								tampilkan1.hide();
-								loading1.fadeIn(); 
-								$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
-								function(data_refresh,status_refresh){
-									loading1.fadeOut();
-									tampilkan1.html(data_refresh);
-									tampilkan1.fadeIn(2000);
-								});
-							});
-						}
+			<div style='padding:5px;'>
+			<form>
+				<label for='message_pending'>Keterangan surat dipending:</label>
+				<textarea class='form-group' id='message_pending' name='message_pending' style='width:100%; height:200px;'></textarea>
+			</form>
+			<button class=\"btn btn-success\" id=\"pending_area2$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
+			</div>
+			<script>
+				$(document).ready(function(){
+					$(\"#pending_area2$isi_key\").click(function(){
+						var loading = $(\"#pra_verifikasi_sedang\");
+						var tampilkan = $(\"#penampil_verifikasi_sedang\");
+						tampilkan.hide();
+						loading.fadeIn(); 
+						$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\" },
+						function(data,status){
+							loading.fadeOut();
+							tampilkan.html(data);
+							tampilkan.fadeIn(2000);
+						});
 					});
 				});
-			});
-		</script>
-		";
+			</script>
+			";
 	}
 
 	public function tolak(){
@@ -328,12 +408,31 @@ class Frontoffice extends CI_Controller {
 	}
 
 	public function jika_status_sudah_diteruskan($keyisi=NULL){
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
 		echo "
 		<div class=\"alert alert-info\">
 		<strong>Maaf!</strong> Surat ini telah diteruskan sebelumnya.
 		</div>
-		<button class=\"btn btn-info\" id=\"teruskan_ulang$keyisi\" style=\"width:100%;\"><i class='fas fa-paper-plane fa-sm text-white-100'></i> Teruskan ulang...</button>
+		<button class=\"btn btn-info\" id=\"teruskan_ulang1$isi_key\" style=\"width:100%;\"><i class='fas fa-paper-plane fa-sm text-white-100'></i> Teruskan ulang...</button>
 		
+		<script>
+		$(document).ready(function(){
+			$(\"#teruskan_ulang1$isi_key\").click(function(){
+				var loading = $(\"#pra_verifikasi\");
+				var tampilkan = $(\"#penampil_verifikasi\");
+				tampilkan.hide();
+				loading.html('Persiapan pengiriman dengan memuat data ke memori...loading..<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->config->item('style_progres_bulat_admin')."></i>');
+				loading.fadeIn(); 
+				$.post('".site_url('/Frontoffice/verifikasi_new_lagi')."',{key:\"".$key."\",data:\"".$isi_key."\" },
+				function(data,status){
+					loading.fadeOut();
+					tampilkan.html(data);
+					tampilkan.fadeIn(2000);
+				});
+			});
+		});
+		</script>
 		";
 
 	}
@@ -346,10 +445,10 @@ class Frontoffice extends CI_Controller {
 		if(!$surat){
 			alert('Surat yang dimaksud tidak tercatat');
 		}else{
-			foreach($surat[0] as $key=>$isi){
-				if(is_string($key)){
-					$data_post[$key]['nilai']=$isi;
-					$data_post[$key]['file']=NULL;
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
 				}
 			}
 
@@ -357,13 +456,13 @@ class Frontoffice extends CI_Controller {
 				echo "
 				<script>
 					$(document).ready(function(){
-                        //$(\"#teruskan_new$keyisi\").click(function(){
+                        //$(\"#teruskan_new$isi_key\").click(function(){
 							$(\"#modal_verifikasi\").modal('show'); 
                             var loading = $(\"#pra_verifikasi\");
                             var tampilkan = $(\"#penampil_verifikasi\");
                             tampilkan.hide();
 							loading.fadeIn(2000); 
-                            $.post('".site_url('/Frontoffice/jika_status_sudah_diteruskan/'.$keyisi)."',{key:\"\",data:\"\" },
+                            $.post('".site_url('/Frontoffice/jika_status_sudah_diteruskan/'.$isi_key)."',{key:\"".$key."\",data:\"".$isi_key."\" },
                             function(data,status){
                                 loading.fadeOut();
                                 tampilkan.html(data);
@@ -531,6 +630,173 @@ class Frontoffice extends CI_Controller {
 				  ";
 				}
 
+			}
+
+		}
+	}
+	
+	public function verifikasi_new_lagi(){
+		//echo "OK BRO MASUK VERIFIKASI";
+		//$this->session->set_userdata('teruskan','');
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
+		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key=>$isi){
+				if(is_string($key)){
+					$data_post[$key]['nilai']=$isi;
+					$data_post[$key]['file']=NULL;
+				}
+			}
+
+			$kiriman=array();
+			foreach($data_post as $key=>$k){
+					array_push($kiriman,$k['nilai']);
+				}
+
+			//Serialize kiriman untuk fungsi update_status_terkirim_dll() lewat var session
+			$kiriman_serialize=serialize($kiriman);
+			$this->session->set_userdata('kiriman_surat',$kiriman_serialize);//$user = $this->session->userdata('user');
+
+			error_reporting(0);
+			if($data_post['direktori_surat_masuk']['nilai']){
+				$handle_surat = file_get_contents($data_post['direktori_surat_masuk']['nilai']);
+				//$handle_enkrip_surat=$this->enkripsi->enkripSimetri_data($handle_surat);
+				//$handle_hex_surat=$this->enkripsi->strToHex($handle_enkrip_surat);
+			}else{
+				$handle_hex_surat=NULL;
+			}
+
+			$data_post=array_merge($data_post,array('handle_hex_surat'=>array('nilai'=>$handle_surat,'file'=>NULL)));
+			$data_post=array_merge($data_post,array('handle_hex_berkas'=>array('nilai'=>$handle_berkas,'file'=>NULL)));
+			//print_r($data_post);
+
+			/*
+			//Enkrip data_post
+			$data_post_enkrip=$this->enkripsi->enkripSimetri_data(serialize($data_post));
+			$data_post_enkrip_hex=$this->enkripsi->strToHex($data_post_enkrip);
+			$data['data_post_enkrip_hex']=$data_post_enkrip_hex;
+			*/
+
+			//Jika tanpa enkrip dan konversi Hex, hanya data_post secara telanjang sebagai array:
+			//$data_post_enkrip=$this->enkripsi->enkripSimetri_data(serialize($data_post));
+			//print_r($data_post);
+			$data_post_enkrip_hex=$this->enkripsi->enkapsulasiData($data_post);
+			//$data_post_enkrip_hex=$this->enkripsi->strToHex(serialize($data_post_enkrip));
+			//echo "INI json: ".$data_post_enkrip_hex."<br>";
+			$data['data_post_enkrip_hex']=$data_post_enkrip_hex;
+
+			//Blok untuk pengirimanecho "<br>INI UKURAN POST: ".strlen($data_post_enkrip_hex)." bytes<br>";
+			echo "Ukuran data yang hendak dikirim: ".strlen($data_post_enkrip_hex)." bytes<br>";
+			$ok=trim(ini_get('post_max_size'),'M');
+			$ok=$ok*1024*1024;
+			echo "Perkiraan batas maksimum adalah: ".$ok." bytes";
+			//print_r($_SERVER);
+			if(strlen($data_post_enkrip_hex)>$ok) {
+			  alert('file anda melampaui batas upload\nbatas ukuran kirim file terkirim adalah 40M\nanda dapat menyampaikan ke admin server \nuntuk merubah nilai post_max_size pada PHP.ini');
+			} else{
+			  /*
+				echo "
+			  <!--<form name=\"myform\" action=\"".site_url('Frontoffice/coba_kirim')."\" method=\"POST\">-->
+			  <form name=\"myform\" action=\"".$this->config->item('link_sekretariat')."index.php/Frontoffice/coba_kirim\" method=\"POST\">
+				<input type=\"hidden\" name=\"data_post_enkrip_hex\" value=\"".$data_post_enkrip_hex."\">
+				<input type=\"hidden\" name=\"asal_surat\" value=\"".$_SERVER['HTTP_REFERER']."\">
+				<button id=\"Link\" class=\"btn btn-primary\" onclick=\"document.myform.submit()\" >Kirim</button>
+			  </form>
+			  ";
+			  */
+
+			  $label_id=$this->enkripsi->strToHex($data_post['digest_signature']['nilai']);
+			  //echo "<br>Link_ke_api_sekretariat$label_id";
+			  echo "
+			  <br><br>
+			  <button id=\"Link_ke_api_sekretariat$label_id\" class=\"btn btn-lg btn-success\" style=\"width:100%;\"><i class=\"fas fa-paper-plane text-white-50\" style=\"color:white\"></i> Kirim</button>
+			  <script>
+					$(document).ready(function(){
+						$(\"#Link_ke_api_sekretariat$label_id\").click(function(){
+							var loading = $(\"#pra_verifikasi\");
+							var tampilkan = $(\"#penampil_verifikasi\");
+							tampilkan.hide();
+							loading.html('Mohon ditunggu, data sedang proses kirim...sending..<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->config->item('style_progres_bulat_admin')."></i>');
+							loading.fadeIn(); 
+							$.ajax({
+								xhr: function() {
+									var xhr = new window.XMLHttpRequest();
+							
+									// Upload progress
+									xhr.upload.addEventListener(\"progress\", function(evt){
+										if (evt.lengthComputable) {
+											var percentComplete = evt.loaded / evt.total;
+											//Do something with upload progress
+											//console.log(percentComplete);
+											if(percentComplete==1){
+												loading.html('<h1>'+Math.round(percentComplete*100)+'% sending complete</h1><br> Tunggu beberapa saat lagi sampai proses penulisan di basisdata sekretariat selesai sempurna...<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->config->item('style_progres_bulat_admin')."></i>');
+											}else{
+												loading.html('<h1>'+Math.round(percentComplete*100)+'% sending progress...</h1>');
+											}
+											//loading.html('<div class=\"progress\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:'+percentComplete*100+'%\">'+percentComplete*100+'%</div></div>');
+										}
+								   }, false);
+							
+								   // Download progress
+								   xhr.addEventListener(\"progress\", function(evt){
+									   if (evt.lengthComputable) {
+										   var percentComplete = evt.loaded / evt.total;
+										   // Do something with download progress
+										   //console.log(percentComplete);
+										   //loading.html(percentComplete);
+										   if(percentComplete==1){
+											   loading.html('<h1>'+Math.round(percentComplete*100)+'% download complete</h1><br> Tunggu beberapa saat lagi sampai proses penulisan di basisdata sekretariat selesai sempurna...<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->config->item('style_progres_bulat_admin')."></i>');
+										   }else{
+											   loading.html('<h1>'+Math.round(percentComplete*100)+'% download progress...</h1>');
+										   }
+										   //loading.html('<div class=\"progress\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:'+percentComplete*100+'%\">'+percentComplete*100+'%</div></div>');
+									   }
+								   }, false);
+							
+								   return xhr;
+								},
+								type: 'POST',
+								url: '".$this->config->item('link_sekretariat').'index.php/Frontoffice/coba_kirim_new'."',
+								data: {key:\"".$data_post['digest_signature']['nilai']."\",data_post_enkrip_hex:\"".$data_post_enkrip_hex."\" },
+								success: function(data){
+									// Do something success-ish
+									loading.fadeOut();
+									tampilkan.html(data);
+									tampilkan.fadeIn(2000);
+									alert(data);
+									if(data=='Surat sukses terkirim'){
+										$.post('".site_url('/Frontoffice/update_status_terkirim_dll/').$label_id."',{key_status:\"okbro\",data_status:\"okbro\" },
+										function(data_status_balik,status_status){
+											//BAGIAN MENCATAT LOG KE BANKDATA
+											$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_status_balik,{ data_status_balik:data_status_balik},
+											function(data_log,status_log){
+												//alert(data_log);
+											});
+	
+											//BAGIAN REFRESH PAGE
+											/*$(\"#modal_verifikasi .close\").click(); //DON'T WORK PERFECTLY*/
+											document.getElementById('close_ok').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+											var loading1 = $(\"#pra_tabel\");
+											var tampilkan1 = $(\"#penampil_tabel\");
+											tampilkan1.hide();
+											loading1.fadeIn(); 
+											$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
+											function(data_refresh,status_refresh){
+												loading1.fadeOut();
+												tampilkan1.html(data_refresh);
+												tampilkan1.fadeIn(2000);
+											});
+										});
+									}
+								}
+							});
+						});
+					});
+				</script>
+			  ";
 			}
 
 		}

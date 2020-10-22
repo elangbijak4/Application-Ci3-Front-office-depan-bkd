@@ -112,25 +112,32 @@ class Viewfrommyframework {
                                     echo "<td align=left valign=top>".$isi[$k]."</td>";
                                 }
                             }else{
+                                /*
                                 $isi[$k]=='dibaca'?$warna_badge='success':
                                 $isi[$k]=='ditolak'?$warna_badge='danger':
                                 $isi[$k]=='dipending'?$warna_badge='warning':
                                 $isi[$k]=='diteruskan'?$warna_badge='primary':
-                                $warna_badge='info';
-                                echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br>";
+                                */
                                 if($isi[$k]=='dibaca'){
+                                    $warna_badge='success';
                                     $time=explode('-',$isi['timestamp_baca']);
-                                    echo "<span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
                                 } else if($isi[$k]=='ditolak'){
+                                    $warna_badge='danger';
                                     $time=explode('-',$isi['timestamp_tolak']);
-                                    echo "<span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
                                 } else if($isi[$k]=='dipending'){
+                                    $warna_badge='warning';
                                     $time=explode('-',$isi['timestamp_dipending']);
-                                    echo "<span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
                                 } else if($isi[$k]=='diteruskan'){
+                                    $warna_badge='primary';
                                     $time=explode('-',$isi['timestamp_diteruskan']);
-                                    echo "<span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
-                                } else {}
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                } else {
+                                    $warna_badge='info';
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                }
                                 echo "</td>";
                             }
                         }
@@ -250,7 +257,7 @@ class Viewfrommyframework {
                                 tampilkan.fadeIn(2000);
                             });
                         });
-
+                        
 						$(\"#eyebuka$keyisi\").click(function(){
 							$('#rincian_surat$keyisi').toggle(1000);
 							$('#rincian_surat_2$keyisi').hide(1000);

@@ -190,6 +190,8 @@ class Frontoffice extends CI_Controller {
 		$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
 		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
 
+		$kiriman[25]=$data[$kolom_target];
+
 		//Update keterangan alasan dipending:
 		$kolom_rujukan['nama_kolom']=$key;
 		$kolom_rujukan['nilai']=$isi_key;
@@ -199,7 +201,6 @@ class Frontoffice extends CI_Controller {
 
 		$kiriman[18]=$message_pending;
 		$kiriman[19]='dipending';
-		$kiriman[23]=$data[$kolom_target];
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
@@ -426,6 +427,8 @@ class Frontoffice extends CI_Controller {
 		$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
 		$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
 
+		$kiriman[22]=$data[$kolom_target];
+
 		//Update keterangan alasan dipending:
 		$kolom_rujukan['nama_kolom']=$key;
 		$kolom_rujukan['nilai']=$isi_key;
@@ -435,7 +438,6 @@ class Frontoffice extends CI_Controller {
 
 		$kiriman[18]=$message_tolak;
 		$kiriman[19]='ditolak';
-		$kiriman[23]=$data[$kolom_target];
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);

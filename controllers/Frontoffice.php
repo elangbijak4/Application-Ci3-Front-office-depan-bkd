@@ -443,6 +443,53 @@ class Frontoffice extends CI_Controller {
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
 		echo $data_rekord_terenkripsi;
 	}
+
+	public function proses_baca(){
+		//echo "OK BRO, INI TEMPAT PENDING";
+		$key=$_POST['key'];
+		$isi_key=$_POST['data'];
+		$surat=$this->user_defined_query_controller_as_array($query="select * from surat_masuk where $key=".$isi_key,$token="andisinra");
+		if(!$surat){
+			alert('Surat yang dimaksud tidak tercatat');
+		}else{
+			foreach($surat[0] as $key_s=>$isi){
+				if(is_string($key_s)){
+					$data_post[$key_s]['nilai']=$isi;
+					$data_post[$key_s]['file']=NULL;
+				}
+			}
+
+			$kiriman=array();
+			foreach($data_post as $key_k=>$k){
+					array_push($kiriman,$k['nilai']);
+				}
+		}
+
+		if(($data_post['status_surat']['nilai']=='masuk') OR ($data_post['status_surat']['nilai']=='')){
+
+			//Update status surat ke status=dipending:
+			$kolom_rujukan['nama_kolom']=$key;
+			$kolom_rujukan['nilai']=$isi_key;
+			$kolom_target='status_surat';
+			$data[$kolom_target]='dibaca';
+			$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+			
+			//Update timestamp_dipending:
+			$kolom_rujukan['nama_kolom']=$key;
+			$kolom_rujukan['nilai']=$isi_key;
+			$kolom_target='timestamp_baca';
+			$data[$kolom_target]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
+			$okfoto=$this->model_frommyframework->update_style_CI_no_alert('surat_masuk',$kolom_rujukan,$data);
+	
+			$kiriman[21]=$data[$kolom_target];
+			$kiriman[19]='dibaca';
+			
+			//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+			$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
+			echo $data_rekord_terenkripsi;
+
+		} else {}
+	}
 	
 	public function verifikasi_new_cara_1(){
 		//echo "OK BRO MASUK VERIFIKASI";

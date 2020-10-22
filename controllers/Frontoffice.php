@@ -129,9 +129,10 @@ class Frontoffice extends CI_Controller {
 									$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
 									function(data_log,status_log){
 									});
+									alert('Status surat berubah menjadi pending...')
 
 									//BAGIAN REFRESH PAGE
-									//document.getElementById('close_ok').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+									document.getElementById('close_ok_sedang').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
 									var loading1 = $(\"#pra_tabel\");
 									var tampilkan1 = $(\"#penampil_tabel\");
 									tampilkan1.hide();
@@ -146,7 +147,7 @@ class Frontoffice extends CI_Controller {
 							});
 						});
 					</script>
-					";
+				";
 			}
 		}
 	}
@@ -191,7 +192,7 @@ class Frontoffice extends CI_Controller {
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
-		echo $kiriman;
+		echo $data_rekord_terenkripsi;
 	}
 	
 	public function pending_ok(){
@@ -203,25 +204,40 @@ class Frontoffice extends CI_Controller {
 				<label for='message_pending'>Keterangan surat dipending:</label>
 				<textarea class='form-group' id='message_pending' name='message_pending' style='width:100%; height:200px;'></textarea>
 			</form>
-			<button class=\"btn btn-success\" id=\"pending_area2$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
+			<button class=\"btn btn-success\" id=\"pending_area$isi_key\" style=\"width:100%;\"><i class='fas fa-pause fa-sm text-white-100'></i> Pending</button>
 			</div>
 			<script>
 				$(document).ready(function(){
-					$(\"#pending_area2$isi_key\").click(function(){
+					$(\"#pending_area$isi_key\").click(function(){
 						var loading = $(\"#pra_verifikasi_sedang\");
 						var tampilkan = $(\"#penampil_verifikasi_sedang\");
 						tampilkan.hide();
 						loading.fadeIn(); 
 						$.post('".site_url('/Frontoffice/proses_pending')."',{key:\"$key\",data:\"$isi_key\" },
 						function(data,status){
-							loading.fadeOut();
-							tampilkan.html(data);
-							tampilkan.fadeIn(2000);
+							//BAGIAN MENCATAT LOG KE BANKDATA
+							$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data:data},
+							function(data_log,status_log){
+							});
+							alert('Status surat berubah menjadi pending...')
+
+							//BAGIAN REFRESH PAGE
+							document.getElementById('close_ok_sedang').click(); //WORK!....INI ADALAH CARA MENUTUP MODAL SECARA LIVE...
+							var loading1 = $(\"#pra_tabel\");
+							var tampilkan1 = $(\"#penampil_tabel\");
+							tampilkan1.hide();
+							loading1.fadeIn(); 
+							$.post('".site_url('/Frontoffice/tampilkan_tabel_new_verifikasi')."',{key_refresh:\"okbro\",data_refresh:\"okbro\" },
+							function(data_refresh,status_refresh){
+								loading1.fadeOut();
+								tampilkan1.html(data_refresh);
+								tampilkan1.fadeIn(2000);
+							});
 						});
 					});
 				});
 			</script>
-			";
+		";
 	}
 
 	public function tolak(){

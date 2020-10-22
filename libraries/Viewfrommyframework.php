@@ -136,7 +136,7 @@ class Viewfrommyframework {
                                     echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
                                 } else {
                                     $warna_badge='info';
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
                                 }
                                 echo "</td>";
                             }
@@ -382,7 +382,7 @@ class Viewfrommyframework {
                             </div>
                             <div class='modal-footer'>
                             <!--<button type='button' class='btn btn-primary' id=\"perbesar_modal\" onclick='$(\"#modal_baca_surat_new_perbesar\").modal(\"show\");'>Perbesar</button>-->
-                            <button type='button' class='btn btn-primary' data-dismiss='modal'>Close</button>
+                            <button type='button' class='btn btn-primary' data-dismiss='modal' id='close_ok_sedang'>Close</button>
                             </div>
                         </div>
                         

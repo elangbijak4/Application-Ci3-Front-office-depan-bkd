@@ -309,6 +309,23 @@ if ( window.history.replaceState ) {
 
 <?php 
 if(isset($kiriman_enkrip)){
+	$this->load->library('model_frommyframework');
+	$this->load->library('enkripsi');
+	$kiriman_dekrip=$this->enkripsi->dekapsulasiData($kiriman_enkrip);
+	//print_r($kiriman_dekrip);
+	$kolom_rujukan['nama_kolom']='digest_signature';
+	$kolom_rujukan['nilai']=$kiriman_dekrip[29];
+	$kolom_target='idsurat_masuk';
+	$idsurat_masuk=$this->model_frommyframework->pembaca_nilai_kolom_tertentu('surat_masuk',$kolom_rujukan,$kolom_target);
+	//contoh bentuk $idsurat_masuk=Array ( [0] => 67 )
+
+	//Isi $kiriman untuk idsurat_masuk:
+	$kiriman_dekrip[0]=$idsurat_masuk[0];
+
+	//Perluas $kiriman_dekrip agar menampung idlogsurat_masuk:
+	array_unshift($kiriman_dekrip,NULL);
+	$kiriman_enkrip=$this->enkripsi->enkapsulasiData($kiriman_dekrip);
+	
 	echo "
 	<script>
 	$(document).ready(function(){

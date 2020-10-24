@@ -40,8 +40,6 @@ class Frontoffice extends CI_Controller {
 	}
 
 	//===========================================TAMBAHAN UNTUK PERUBAHAN DASHBOARD ADMIN==================================================
-	
-
 	public function tampilkan_rincian_surat_frontoffice($size=NULL){
 		$key=$_POST['key'];
 		$isi_key=$_POST['data'];
@@ -203,6 +201,7 @@ class Frontoffice extends CI_Controller {
 		$kiriman[19]='dipending';
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+		array_unshift($kiriman,NULL);
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
 		echo $data_rekord_terenkripsi;
 	}
@@ -440,6 +439,7 @@ class Frontoffice extends CI_Controller {
 		$kiriman[19]='ditolak';
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+		array_unshift($kiriman,NULL);
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
 		echo $data_rekord_terenkripsi;
 	}
@@ -485,6 +485,7 @@ class Frontoffice extends CI_Controller {
 			$kiriman[19]='dibaca';
 			
 			//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+			array_unshift($kiriman,NULL);
 			$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
 			echo $data_rekord_terenkripsi;
 
@@ -637,6 +638,7 @@ class Frontoffice extends CI_Controller {
 		$kiriman[23]=$data[$kolom_target];
 		
 		//Kirim balik untuk di log verifikasi_new() lewat call ajax dari verifikasi_new()
+		array_unshift($kiriman,NULL);
 		$data_rekord_terenkripsi=$this->enkripsi->enkapsulasiData($kiriman);
 		echo $data_rekord_terenkripsi;
 
@@ -861,6 +863,18 @@ class Frontoffice extends CI_Controller {
 												function(data_log,status_log){
 													//alert(data_log);
 												});
+
+												//BLOK 0001: Bagian yang mengakses kiriman masuk telah tercatat di sekretariat untuk dibantu 
+												//mencatat. log nya di bankdata.
+												//INGAT JANGAN LUPA COPY BLOK 0001 KE verifikasi_new().
+												$.post('".$this->config->item('link_sekretariat').'index.php/Frontoffice/pengirim_log_antara_ke_bankdata_lewat_ajax_di_frontoffice_opd'."',{ data_0001:\"\"},
+												function(data_status_balik,statusbalik_0001){
+													//alert('OK BRO INI BALIKAN: '+databalik_0001);
+													$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_status_balik,{ data_status_balik:data_status_balik},
+													function(data_log,status_log){
+														//alert(data_log);
+													});
+												});
 		
 												//BAGIAN REFRESH PAGE
 												/*$(\"#modal_verifikasi .close\").click(); //DON'T WORK PERFECTLY*/
@@ -1029,6 +1043,18 @@ class Frontoffice extends CI_Controller {
 											$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_status_balik,{ data_status_balik:data_status_balik},
 											function(data_log,status_log){
 												//alert(data_log);
+											});
+
+											//BLOK 0001: Bagian yang mengakses kiriman masuk telah tercatat di sekretariat untuk dibantu 
+											//mencatat. log nya di bankdata.
+											//INGAT JANGAN LUPA COPY BLOK 0001 KE verifikasi_new().
+											$.post('".$this->config->item('link_sekretariat').'index.php/Frontoffice/pengirim_log_antara_ke_bankdata_lewat_ajax_di_frontoffice_opd'."',{ data_0001:\"\"},
+											function(data_status_balik,statusbalik_0001){
+												//alert('OK BRO INI BALIKAN: '+databalik_0001);
+												$.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_status_balik,{ data_status_balik:data_status_balik},
+												function(data_log,status_log){
+													//alert(data_log);
+												});
 											});
 	
 											//BAGIAN REFRESH PAGE

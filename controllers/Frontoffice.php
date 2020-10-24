@@ -1147,6 +1147,122 @@ class Frontoffice extends CI_Controller {
 	}
 	//===========================================TAMBAHAN UNTUK PERUBAHAN DASHBOARD ADMIN==================================================
 	
+	//===========================================FUNGSI API BARU UNTUK DIGUNAKAN TERUSAN SURAT FRONTOFFICE=================================
+	public function tes_terusan_baru(){
+		echo "OK BRO DARI SEKRETARIAT FUNGSI:<br>tes_terusan_baru()<br>berikut ini nilai payload:<br>";
+		echo $_POST['data'];
+	}
+
+	public function pengirim_log_antara_ke_bankdata_lewat_ajax_di_frontoffice_opd(){
+		$kiriman_enkrip = $this->session->userdata('kiriman_enkrip');
+		echo $kiriman_enkrip;
+	}
+		
+	public function coba_kirim_new($terusan=NULL){
+		/*
+		$user = $this->session->userdata('user');
+        $str = $user['email'].$user['username']."1@@@@@!andisinra";
+		$str = hash("sha256", $str );
+		$hash=$this->session->userdata('hash');
+		if(($user!==FALSE)&&($str==$hash)){
+		*/
+		if($terusan==NULL){$directory='surat_dan_berkas_masuk';}else{$directory='surat_dan_berkas_terusan';}
+		//sepertinya yang diamksud terusan disini adalah terusan dari bidang setelah sampai dibidang.
+		//jadi bidang bisa meneruskan balik ke sekfretariat, tetapi inshaa Allah coba cek lagi lan.
+		
+			if(isset($_POST['data_post_enkrip_hex'])){
+				//$data_post_terima=$_POST['data_post_enkrip_hex'];
+
+				//Dekrip dan uraikan:
+				//OLD
+				$data_post_terima=$this->enkripsi->dekapsulasiData($_POST['data_post_enkrip_hex']);
+				//$data_post_terima=unserialize($this->enkripsi->hexToStr($_POST['data_post_enkrip_hex']));
+				//print_r($data_post_terima);
+				if($data_post_terima['handle_hex_surat']['nilai']){
+					$handle_hex_surat=$data_post_terima['handle_hex_surat']['nilai'];
+					//OLD
+					//$pasca_dekrip_surat=$this->enkripsi->dekripSimetri_data($this->enkripsi->hexToStr($handle_hex_surat));
+					$oksurat=file_put_contents("./public/".$directory."/".$data_post_terima['nama_file_surat']['nilai'], $handle_hex_surat);
+				}
+				
+				if($data_post_terima['handle_hex_berkas']['nilai']){
+					$handle_hex_berkas=$data_post_terima['handle_hex_berkas']['nilai'];
+					//OLD
+					//$pasca_dekrip_berkas=$this->enkripsi->dekripSimetri_data($this->enkripsi->hexToStr($handle_hex_berkas));
+					$okberkas=file_put_contents("./public/".$directory."/".$data_post_terima['nama_file_berkas']['nilai'], $handle_hex_berkas);
+				}
+				if(isset($oksurat)){$data['pesan_kirim_surat']=$oksurat;}
+				if(isset($okberkas)){$data['pesan_kirim_berkas']=$okberkas;}
+
+				//Insersi ke tabel surat_terusan jika file surat atau berkas berhasil masuk, jika tidak maka jangan insersi.
+				if(isset($oksurat) || isset($okberkas)){
+					$buffer=array();
+					foreach($data_post_terima as $key=>$k){
+						if(!($key=='handle_hex_surat') && !($key=='handle_hex_berkas')){
+							if($key=='timestamp_masuk'){
+								array_push($buffer,implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime())));
+							}else if($key=='posisi_surat_terakhir'){
+								array_push($buffer,"Sekretariat ".$this->config->item('nama_opd'));//sesuaikan jawaban ini dengan bidangnya, jika ini di sekretariat maka ganti dengan sekretariat '.$this->config->item('nama_opd').'
+							}else if($key=='status_surat'){
+								array_push($buffer,"masuk");
+								/*
+							}else if($key=='direktori_surat_masuk') {
+								array_push($buffer,str_replace('surat_dan_berkas_masuk','surat_dan_berkas_terusan',$k['nilai']));
+							}else if($key=='direktori_berkas_yg_menyertai'){
+								array_push($buffer,str_replace('surat_dan_berkas_masuk','surat_dan_berkas_terusan',$k['nilai']));
+							*/
+							}else{
+								array_push($buffer,$k['nilai']);
+							}
+						}
+					}
+				$kiriman=array_merge(array(0=>NULL),$buffer);
+
+				//Persiapkan data untuk di log ke bankdata lewat fungsi 
+				//kiriman_enkrip jangan ditambahkan NULL di entry $kiriman pada $kiriman[0] 
+				//karena sudah dilakukan pada fungsi ini sebagai konsekuensi struktur data tabel_masuk di sekretariat. 
+				$this->session->set_userdata('kiriman_enkrip',$this->enkripsi->enkapsulasiData($kiriman));
+
+				if($terusan==NULL){
+					$tabel='surat_masuk';
+					$hasil_insersi_surat_berkas=$this->general_insertion_controller_baru($kiriman,$tabel);//ggg3
+					if($hasil_insersi_surat_berkas){
+						$counter_table='tbcounter_notifikasi';
+						$kolom_rujukan['nama_kolom']='idcounter_notifikasi';
+						$kolom_rujukan['nilai']=5;//untuk nama_counter: counter surat masuk dari front office
+						$kolom_target='nilai_counter';
+						$this->model_frommyframework->naikkan_counter_notifikasi($counter_table,$kolom_rujukan,$kolom_target);
+					}
+				}else{
+					$tabel='surat_terusan';
+					$hasil_insersi_surat_berkas=$this->general_insertion_controller_baru($kiriman,$tabel);//ggg3
+					if($hasil_insersi_surat_berkas){
+						$counter_table='tbcounter_notifikasi';
+						$kolom_rujukan['nama_kolom']='idcounter_notifikasi';
+						$kolom_rujukan['nilai']=3;//untuk nama_counter: counter surat masuk terusan
+						$kolom_target='nilai_counter';
+						$this->model_frommyframework->naikkan_counter_notifikasi($counter_table,$kolom_rujukan,$kolom_target);
+					}
+				}
+				//$tabel='surat_terusan';
+				//print_r($kiriman);
+				//$hasil_insersi_surat_berkas=$this->general_insertion_controller($kiriman,$tabel);
+				$hasil_insersi_surat_berkas?$hasil_insersi_surat_berkas='Surat sukses terkirim':$hasil_insersi_surat_berkas='Surat gagal dikirim';
+				echo $hasil_insersi_surat_berkas;
+				//OLD
+				//redirect($_POST['asal_surat'].'/'.$hasil_insersi_surat_berkas);
+				} else{
+					echo "Surat gagal tercatat di frontoffice";
+				}
+				//$this->load->view('admin_frontoffice/dashboard',$data);
+			} else{
+				echo "Tidak ada surat yang dikirim (data kosong)";
+				//$this->load->view('admin_frontoffice/dashboard');
+			}
+		//}
+	}	
+	//===========================================END FUNGSI API BARU UNTUK DIGUNAKAN TERUSAN SURAT FRONTOFFICE=============================
+
 	//===========================================PENAMBAHAN FUNGSI BARU UNTUK UNGGAH SURAT BERKAS DARI RUANGKABAN==========================
 	public function frontoffice_unggahberkas_dari_ruangkaban($alamat)
 	{

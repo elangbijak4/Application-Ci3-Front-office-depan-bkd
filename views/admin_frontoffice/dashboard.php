@@ -730,7 +730,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
                     var tampilkan = $("#penampil_tabel");
                     tampilkan.hide();
                     loading.fadeIn(); 
-                    $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_surat_terusan_new');?>',{ data:"okbro"},
+                    $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_terusan_new_verifikasi');?>',{ data:"okbro"},
                     function(data,status){
                       loading.fadeOut();
                       tampilkan.html(data);
@@ -1022,7 +1022,9 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
               var tampilkan = $("#penampil_tabel");
               tampilkan.hide();
               loading.fadeIn(); 
-              $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_surat_terusan_new');?>',{ data:"okbro"},
+              $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_terusan_new_verifikasi');?>',{ data:"okbro"},
+              //OLD
+              //$.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_surat_terusan_new');?>',{ data:"okbro"},
               function(data,status){
                 loading.fadeOut();
                 tampilkan.html(data);

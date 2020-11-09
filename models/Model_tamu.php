@@ -27,7 +27,7 @@ class Model_tamu extends MY_Model {
 
 	public function update_cookie($data)
     {
-        $this->db->where('username', $data['username']);
+        $this->db->where('idtamu', $data['idtamu']);
         $this->db->update($this->table, array('cookie'=>$data['cookie']));
 	}
 	

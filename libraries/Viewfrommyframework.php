@@ -121,22 +121,32 @@ class Viewfrommyframework {
                                 if($isi[$k]=='dibaca'){
                                     $warna_badge='success';
                                     $time=explode('-',$isi['timestamp_baca']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>
+                                    <br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
                                 } else if($isi[$k]=='ditolak'){
                                     $warna_badge='danger';
                                     $time=explode('-',$isi['timestamp_tolak']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>
+                                    <br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
                                 } else if($isi[$k]=='dipending'){
                                     $warna_badge='warning';
                                     $time=explode('-',$isi['timestamp_dipending']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>
+                                    <br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
                                 } else if($isi[$k]=='diteruskan'){
                                     $warna_badge='primary';
                                     $time=explode('-',$isi['timestamp_diteruskan']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>";
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>
+                                    <br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
+                                } else if($isi[$k]=='selesai'){
+                                    $warna_badge='success';
+                                    $time=explode('-',$isi['timestamp_dikembalikan']);
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">SELESAI</span><br><span class=\"badge badge-$warna_badge\">".$time[0]."</span>
+                                    <br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
                                 } else {
                                     $warna_badge='info';
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
+                                    $time=explode('-',$isi['timestamp_masuk']);
+                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br><span class=\"badge badge-$warna_badge\">".$time[1]."</span>";
                                 }
                                 echo "</td>";
                             }

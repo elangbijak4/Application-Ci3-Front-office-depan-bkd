@@ -38,7 +38,7 @@ $config['link_frontoffice']=$config['base_domain'].'/front-office-depan/';
 $config['link_sekretariat']=$config['base_domain'].'/sekretariat-bkd/';
 $config['situs_induk']='https://bkd.sulselprov.go.id';
 
-$config['link_ruangkaban']=$config['base_domain'].'/bpsdm-frontoffice';
+$config['link_ruangkaban']=$config['base_domain'].'/ruangkaban-bkd';
 
 /*
 |--------------------------------------------------------------------------

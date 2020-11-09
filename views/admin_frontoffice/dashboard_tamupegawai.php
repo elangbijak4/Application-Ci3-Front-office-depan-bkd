@@ -4,6 +4,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 //$data=$this->session->userdata('user');
 //if(!$pegawai){
   $user=$this->session->userdata('user_frontoffice');
+  //print_r($user);
 //}else{
   //$user['username']=$data['nipbaru'][0]['nipbaru'];
 //}
@@ -79,7 +80,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Ruang Virtual:</h6>
             <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Lihat Balasan Surat</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_terusan" >Riwayat Unggah Surat</a>
+            <a class="collapse-item" style="cursor:pointer;" id="riwayat_surat_saya" >Riwayat Unggah Surat</a>
             <a class="collapse-item" href="">Agenda Kerja</a>
             <a class="collapse-item" href="">Kirim Pesan ke Front Office</a>
           </div>
@@ -399,12 +400,19 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
           <!-- Script untuk pemanggilan ajax -->
           <script>      
           $(document).ready(function(){
-            $("#surat_berkas_terusan").click(function(){
+            $("#riwayat_surat_saya").click(function(){
               var loading = $("#pra_tabel");
               var tampilkan = $("#penampil_tabel");
+              var limit=20;
+              var page=1;
+              var page_awal=1;
+              var jumlah_page_tampil=4;
+              var nilai_kolom_cari = <?php echo $user['idtamu']; ?>;
+              var kolom_cari ='no_registrasi_tamu';
+
               tampilkan.hide();
               loading.fadeIn(); 
-              $.post('<?php echo site_url("/Akuntamupegawai/tampilkan_tabel_surat_terusan_di_akun_tamu/".$user['username']);?>',{ data:"okbro"},
+              $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampil_tabel_cruid_new_verifikasi_untuk_log_surat_masuk_tamu_pegawai_di_akun/log_surat_masuk/idlog_masuk/desc/";?>'+limit+'/'+page+'/'+page_awal+'/'+jumlah_page_tampil+'/TRUE/'+kolom_cari+'/'+nilai_kolom_cari+'/<?php echo $user['idtamu']; ?>',{ data:"okbro"},
               function(data,status){
                 loading.fadeOut();
                 tampilkan.html(data);
@@ -493,6 +501,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
             <!-- Content Column -->
             <div class="col-xl-3 col-md-6 mb-4" id="okbro" style='overflow:auto;' >
+            <div id='header_tabel'></div>
             <center>
             <div id='pra_tabel' style='width:40%;display:none;' align='center' >
             <i class="fa-3x fas fa-spinner fa-pulse" style="color:#97BEE4"></i>

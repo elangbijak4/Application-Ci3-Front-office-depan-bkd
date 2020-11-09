@@ -13,6 +13,30 @@ class Model_frommyframework extends CI_Model
         $this->load->library('enkripsi');
     }
 
+    //======PERUBAHAN FUNGSI general_insertion_model VERSI BARU UNTUK SEKRETARIAT MENERIMA DARI FRONTOFFICE==========
+    /**
+     * Ini versi baru yang menghilangkan alert di akhir fungsi, karena adanya kesalahan atau error di hostingan.
+     */
+    public function general_insertion_model_baru($kiriman,$tabel) {
+        $kiriman=penafsir_NULL($kiriman);
+        $field=$this->penarik_key_model($tabel);
+        $kiriman=penyamaUkuranArray($kiriman,$field);
+        $query_insert = "INSERT INTO $tabel("; 
+        $query_insert .="$field[1]";
+        for ($i=2;$i<count($field);$i++) {$query_insert .=",$field[$i]";}
+        /*foreach ($field as $isi) {if(!($field[0]) && !($field[1])){$query_insert .=",$isi";}} */
+        $query_insert .=")VALUES (";
+        $query_insert .="'".addslashes($kiriman[1])."'";
+        for ($i=2;$i<count($field);$i++) {$query_insert .=",'".addslashes($kiriman[$i])."'";}
+        /*foreach ($kiriman as $isi) {if(!($isi==$kiriman[0]) && !($isi==$kiriman[1]))$query_insert .=",'$isi'";}*/
+        $query_insert .=")";
+        $oke=$this->user_defined_query_model($query_insert,$token='andisinra');
+        //if($oke){alert("Penambahan data sukses");} else {alert("Penambahan gagal. Silahkan ulangi kembali");}
+        return $oke;
+    }
+    //======END PERUBAHAN FUNGSI general_insertion_model VERSI BARU UNTUK SEKRETARIAT MENERIMA DARI FRONTOFFICE======
+
+
     //===========================TAMBAHAN BARU 1 ROUND 2=================================
     public function pembaca_nilai_baris_tertentu($table,$kolom_rujukan){
         //$this->db->select($kolom_target);

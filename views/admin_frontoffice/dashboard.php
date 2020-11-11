@@ -65,12 +65,67 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-envelope"></i>
-          <span>Front Office</span>
+          <span>Surat Front Office</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Surat Masuk Front Office</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Surat Masuk</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan_frontoffice" >Surat Balasan</a>
+          </div>
+        </div>
+      </li>
+            
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+      $(document).ready(function(){
+        $("#surat_berkas").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          tampilkan.hide();
+          loading.fadeIn(); 
+
+          //#perbaikan 25 agustus 2020
+          $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_new_verifikasi');?>',{ data:"okbro"},
+          //$.post('<?php echo site_url('/Frontoffice/tampilkan_tabel');?>',{ data:"okbro"},
+
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+          });
+        });
+        });
+      </script> 
+
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+      $(document).ready(function(){
+        $("#surat_berkas_balasan_frontoffice").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          tampilkan.hide();
+          loading.fadeIn(); 
+          $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampilkan_tabel_balasan_frontoffice_verifikasi";?>',{ data:"okbro"},
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+          });
+        });
+        });
+      </script> 
+
+
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo_2" aria-expanded="true" aria-controls="collapseTwo_2">
+          <i class="fas fa-fw fa-envelope"></i>
+          <span>Surat Internal BKD</span>
+        </a>
+        <div id="collapseTwo_2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
+            <h6 class="collapse-header">Ruang Virtual:</h6>
             <a class="collapse-item" style="cursor:pointer;" id="surat_masuk_internal" >Surat Masuk Internal</a>
             <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_terusan" >Surat Terusan Sekretariat</a>
             <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan" >Surat Balasan Sekretariat</a>
@@ -988,32 +1043,6 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
           <!-- Content Row -->
           <div class="row">
-
-            
-          <!-- Script untuk pemanggilan ajax -->
-          <script>      
-          $(document).ready(function(){
-            $("#surat_berkas").click(function(){
-              var loading = $("#pra_tabel");
-              var tampilkan = $("#penampil_tabel");
-              tampilkan.hide();
-              loading.fadeIn(); 
-
-              //#perbaikan 25 agustus 2020
-              $.post('<?php echo site_url('/Frontoffice/tampilkan_tabel_new_verifikasi');?>',{ data:"okbro"},
-              //$.post('<?php echo site_url('/Frontoffice/tampilkan_tabel');?>',{ data:"okbro"},
-
-              function(data,status){
-                loading.fadeOut();
-                tampilkan.html(data);
-                tampilkan.fadeIn(2000);
-              });
-            });
-            });
-            
-          </script> 
-
-
           <!-- Script untuk pemanggilan ajax -->
           <script>      
           $(document).ready(function(){

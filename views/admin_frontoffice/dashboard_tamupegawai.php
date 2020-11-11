@@ -4,7 +4,6 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 //$data=$this->session->userdata('user');
 //if(!$pegawai){
   $user=$this->session->userdata('user_frontoffice');
-  //print_r($user);
 //}else{
   //$user['username']=$data['nipbaru'][0]['nipbaru'];
 //}
@@ -79,13 +78,32 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Lihat Balasan Surat</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan_frontoffice" >Lihat Balasan Surat</a>
             <a class="collapse-item" style="cursor:pointer;" id="riwayat_surat_saya" >Riwayat Unggah Surat</a>
-            <a class="collapse-item" href="">Agenda Kerja</a>
+            <!--<a class="collapse-item" href="">Agenda Kerja</a>-->
             <a class="collapse-item" href="">Kirim Pesan ke Front Office</a>
           </div>
         </div>
       </li>
+
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+      $(document).ready(function(){
+        $("#surat_berkas_balasan_frontoffice").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          tampilkan.hide();
+          loading.fadeIn(); 
+          $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampilkan_tabel_balasan_frontoffice_verifikasi/TRUE/no_registrasi_tamu_yang_dibalas/".$user['idtamu'];?>',{ data:"okbro"},
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+          });
+        });
+        });
+      </script> 
+
 
       <!-- Nav Item - Utilities Collapse Menu -->
       <li class="nav-item">

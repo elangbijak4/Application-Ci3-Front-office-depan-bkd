@@ -110,7 +110,7 @@ class Logintamupegawai_search extends MY_Controller {
 						'idtamu' => $user['idtamu']
 					);
 					
-					set_cookie('munirah_muslim',$str_cookie,3600*24);
+					set_cookie('munirah_muslim_tamu_search_bkd',$str_cookie,3600*24);
 					$this->Muser->update_cookie($data_cookie);
 				} 
 				//KALAU MAU MENGETES KODE MENGGUNAKAN ECHO, MATIKAN DULU SEMUA FUNGSI redirect() KARENA INI MENUTUP HASILNYA;
@@ -293,7 +293,7 @@ class Logintamupegawai_search extends MY_Controller {
 		{
 			$this->session->unset_userdata('user_frontoffice_search');
 			$this->session->set_userdata('keluar', 'keluar');
-			delete_cookie('munirah_muslim');
+			delete_cookie('munirah_muslim_tamu_search_bkd');
 			redirect(site_url('Frontoffice/halaman_login_search'));
 		}
 	
@@ -301,7 +301,7 @@ class Logintamupegawai_search extends MY_Controller {
 	{
 		$this->session->unset_userdata('user_frontoffice_pegawai');
 		$this->session->set_userdata('keluar', 'keluar');
-		delete_cookie('munirah_muslim');
+		delete_cookie('munirah_muslim_pegawai_search_bkd');
 		redirect(site_url('Frontoffice/halaman_login_search_internal'));
 	}
 

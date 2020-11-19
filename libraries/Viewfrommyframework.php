@@ -19,6 +19,81 @@ class Viewfrommyframework {
 		
     }
 
+    //===========================================#0002======================================================================================
+    function form_combo_database_json($table='table_opd',$opd='opd',$nilai_opd='DINAS PENDIDIKAN',$kolom_target='bidang',$nama_komponen,$class,$id,$atribut,$selected,$id_select_opd=NULL,$keterangan=NULL){
+        //ini yang mestinya bertugas memanggil form_combo_database_json_2
+        echo "
+            <script>
+            $(document).ready(function(){
+                    $(\"#$id_select_opd\").click(function(){
+                    var tampilkan = $(\"#$id\");
+                    var nilai_opd = $(\"#$id_select_opd option:selected\").val();
+                    //alert(nilai_opd);
+                    $.post('".site_url("/Frontoffice/form_combo_database_json_2/").$table."/".$opd."/".$kolom_target."',{id_combo_opd:\"".$id_select_opd."\", nilai_opd:nilai_opd, id_select_bidang:\"".$id."\",selected:\"".$selected."\"},
+                    function(data,status){
+                        tampilkan.html(data);
+                        tampilkan.fadeIn(2000);
+                    });
+                });
+            });
+            </script>
+		";
+        echo "<select class=\"".$class."\" id=\"".$id."\" name=\"".$nama_komponen."\" ".$atribut.">";
+		echo "<option value=\"\">$keterangan</option>";
+		echo "</select>";
+
+    }
+
+    function form_combo_database_json_ditujukanke($table='table_opd',$opd='opd',$nilai_opd='DINAS PENDIDIKAN',$kolom_target='bidang',$nama_komponen,$class,$id,$atribut,$selected){
+        //ini yang mestinya bertugas memanggil form_combo_database_json_2
+        echo "
+            <script>
+            $(document).ready(function(){
+                var tampilkan = $(\"#$id\");
+                $.post('".site_url("/Frontoffice/form_combo_database_json_ditujukanke_2/").$table."/".$opd."/".$kolom_target."',{id_select_bidang:\"".$id."\",selected:\"".$selected."\"},
+                function(data,status){
+                    tampilkan.html(data);
+                    tampilkan.fadeIn(2000);
+                });
+            });
+            </script>
+		";
+        echo "<select class=\"".$class."\" id=\"".$id."\" name=\"".$nama_komponen."\" ".$atribut.">";
+		echo "<option value=\"\" >Klik untuk memilih</option>";
+		echo "</select>";
+
+    }
+
+    function form_combo_database_json_old($table='table_opd',$opd='opd',$nilai_opd='DINAS PENDIDIKAN',$kolom_target='bidang',$nama_komponen,$class,$id,$atribut,$selected,$id_select_opd=NULL){
+        //ini yang mestinya bertugas memanggil form_combo_database_json_2
+        echo "
+            <script>
+            $(document).ready(function(){
+                    $(\"#$id_select_opd\").click(function(){
+                    var tampilkan = $(\"#penampung_form_balasan$id_select_opd\");
+                    var nilai_opd = $(\"#$id_select_opd option:selected\").val();
+                    //alert(nilai_opd);
+                    $.post('".site_url("/Frontoffice/form_combo_database_json_2/").$table."/".$opd."/".$kolom_target."',{id_combo_opd:\"".$id_select_opd."\", nilai_opd:nilai_opd, nama_komponen:\"".$nama_komponen."\", class:\"".$class."\", id:\"".$id."\", atribut:\"".$atribut."\", selected:\"".$selected."\"},
+                    function(data,status){
+                        tampilkan.html(data);
+                        tampilkan.fadeIn(2000);
+                    });
+                });
+            });
+            </script>
+            <div id=\"penampung_form_balasan$id_select_opd\"></div>
+		";
+
+    }
+
+    function form_combo_database_json_sub_bidang($table='table_opd',$opd='opd',$bidang='bidang',$nilai_opd='DINAS PENDIDIKAN',$kolom_target='sub_bidang',$nama_komponen,$class,$id,$atribut,$selected,$id_select_opd=NULL,$id_select_bidang=NULL,$keterangan=NULL){
+        //ini yang mestinya bertugas memanggil form_combo_database_json_2
+        echo "<select class=\"".$class."\" id=\"".$id."\" name=\"".$nama_komponen."\" ".$atribut." >";
+		echo "<option value=\"\" >$keterangan</span></option>";
+		echo "</select>";
+    }
+    //===========================================END #0002==================================================================================
+
     //===========================================TAMBAHAN KHUSUS UNTUK CRUID VERIFIKASI PERBAIKAN===========================================
     function penampil_tabel_no_foto_untuk_surat_masuk_frontoffice_surat_masuk_verifikasi ($kolom_cari,$nama_kolom_direktori_surat,$array_atribut,$query_yang_mau_ditampilkan,$submenu,$kolom_direktori='direktori',$direktori_avatar='/public/img/no-image.jpg'){
         $Recordset1=$this->CI->model_frommyframework->user_defined_query_model($query_yang_mau_ditampilkan,$token='andisinra');
@@ -4034,8 +4109,9 @@ class Viewfrommyframework {
         //$Recordset=$this->CI->model_frommyframework->konvers_recordset_PDOStatement_to_array($Recordset1);
         echo "<select class=\"".$class."\" id=\"".$id."\" name=\"".$nama_komponen."\" ".$atribut.">";
         $i=0;
+        if($selected=='')echo "<option value=\"\" selected >Klik untuk memilih</option>";
         foreach ($Recordset1 as $k) {
-            if($k[$kolom[0]]==$selected){
+            if(($k[$kolom[0]]==$selected)&&($selected!='')){
                 echo "<option value=\"".$k[$kolom[0]]."\" selected >".$k[$kolom[1]]."</option>";
             }else{
                 echo "<option value=\"".$k[$kolom[0]]."\">".$k[$kolom[1]]."</option>";
@@ -4044,7 +4120,6 @@ class Viewfrommyframework {
         }
         echo "</select>";
     }
-    
 
     /*
         CONTOH PENGGUNAAN SECARA UMUM: form_general_controller()
@@ -4422,6 +4497,39 @@ class Viewfrommyframework {
             $tabel=$value[2];
             $selected=$value_selected_combo;
             $this->form_combo_database($type='combo_database',$nama_komponen,$class,$id,$atribut,$kolom,$tabel,$selected);
+            //array_push($perekam_id,rekam($type,$nama_komponen,$class,$id,$atribut,$event,$label,$value));
+            break;
+        case ("combo_database_json"):
+            $kolom_target=$value[0];//'sub_bidang'
+            $opd=$value[1];//'bidang'
+            $table=$value[2];
+            $id_select_opd=$value[3];
+            $keterangan=$value[4];
+            //apakah $value? yang ini ==> contoh $coba[8][7]=array("bidang","opd",'table_opd');
+            $selected=$value_selected_combo;
+            $this->form_combo_database_json($table,$opd,$nilai_opd='DINAS PENDIDIKAN',$kolom_target,$nama_komponen,$class,$id,$atribut,$selected,$id_select_opd,$keterangan);
+            //array_push($perekam_id,rekam($type,$nama_komponen,$class,$id,$atribut,$event,$label,$value));
+            break;
+        case ("combo_database_json_2"):
+            $kolom_target=$value[0];
+            $bidang=$value[1];
+            $opd=$value[2];
+            $table=$value[3];
+            $id_select_opd=$value[4];
+            $id_select_bidang=$value[5];
+            $keterangan=$value[6];
+            //apakah $value? yang ini ==> contoh $coba[8][7]=array("bidang","opd",'table_opd');
+            $selected=$value_selected_combo;
+            $this->form_combo_database_json_sub_bidang($table,$opd,$bidang,$nilai_opd='DINAS PENDIDIKAN',$kolom_target,$nama_komponen,$class,$id,$atribut,$selected,$id_select_opd,$id_select_bidang,$keterangan);
+            //array_push($perekam_id,rekam($type,$nama_komponen,$class,$id,$atribut,$event,$label,$value));
+            break;
+        case ("combo_database_json_3"):
+            $kolom_target=$value[0];//'sub_bidang'
+            $opd=$value[1];//'bidang'
+            $table=$value[2];
+            //apakah $value? yang ini ==> contoh $coba[8][7]=array("bidang","opd",'table_opd');
+            $selected=$value_selected_combo;
+            $this->form_combo_database_json_ditujukanke($table,$opd,$nilai_opd='DINAS PENDIDIKAN',$kolom_target,$nama_komponen,$class,$id,$atribut,$selected);
             //array_push($perekam_id,rekam($type,$nama_komponen,$class,$id,$atribut,$event,$label,$value));
             break;
         case ("button_iframe"):

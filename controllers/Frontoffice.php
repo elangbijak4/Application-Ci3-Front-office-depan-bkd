@@ -40,6 +40,197 @@ class Frontoffice extends CI_Controller {
 		$this->load->view('loginpage');
 	}
 
+	#0003
+	public function halaman_login_unggah_surat_tamu(){
+		$this->load->view('loginpage_unggah_surat_tamu');
+	}
+
+	public function halaman_unggah_surat_tamu()
+	{
+		//$this->load->view('loginpage');
+		//cek session, jika ada langsung arahkan ke agamas
+		$this->load->model('Model_tamu', 'Muser');
+		$user = $this->session->userdata('user_frontoffice_unggah_surat_tamu');
+        $str = $user['email'].$user['idtamu']."1@@@@@!andisinra";
+        $str = hash("sha256", $str );
+		$hash=$this->session->userdata('hash');
+		
+		$cookie_user=get_cookie('munirah_muslim_tamu_unggah_surat');
+		$cookie_tersimpan = $this->Muser->get_by_cookie($cookie_user)->row();
+
+        if ((($user!==FALSE)&&($str==$hash)))
+        {   
+			//redirect(site_url('Frontoffice/search_page'));
+			//echo "OK BRO";
+            $this->load->view('index_tamu');
+		} else{
+			redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu'));
+		}
+		
+		//$this->load->view('search_page/halaman_search');
+	}
+	#end0003
+	
+	//===========================================#0002======================================================================================
+	function tes_0002(){
+		$nama_kolom='digest_signature';
+		$nilai_kolom=$this->enkripsi->enkapsulasiData('183315/11/202034b40e6feafdd36d31191fc52fd9f9928e7205fd');
+		$kolom_target='idsurat_masuk';
+		$this->cari_tau_id_surat_masuk($nama_kolom,$nilai_kolom,$kolom_target);
+	}
+	
+	public function cari_tau_id_surat_masuk($nama_kolom,$nilai_kolom,$kolom_target){
+		$kolom_rujukan['nama_kolom']=$nama_kolom;//'digest_signature';
+		$kolom_rujukan['nilai']=$this->enkripsi->dekapsulasiData($nilai_kolom);//$kiriman_dekrip[29];
+		$kolom_target=$kolom_target;//'idsurat_masuk';
+		$idsurat_masuk=$this->model_frommyframework->pembaca_nilai_kolom_tertentu('surat_masuk',$kolom_rujukan,$kolom_target);
+		//contoh bentuk $idsurat_masuk=Array ( [0] => 67 )
+		echo $idsurat_masuk[0];
+	
+		/*
+		//Isi $kiriman untuk idsurat_masuk:
+		$kiriman_dekrip[0]=$idsurat_masuk[0];
+	
+		//Perluas $kiriman_dekrip agar menampung idlogsurat_masuk:
+		array_unshift($kiriman_dekrip,NULL);
+		$kiriman_enkrip=$this->enkripsi->enkapsulasiData($kiriman_dekrip);
+		*/
+	}
+	
+	public function form_combo_database_json_2($table='table_opd',$opd='opd',$kolom_target='bidang'){
+        $query=$this->model_frommyframework->akses_bidang_opd_table_opd($table,$opd,$_POST['nilai_opd'],$kolom_target);
+		echo "<option value=\"\" selected>Klik untuk memilih</option>";
+        foreach($query as $k=>$isi){
+            //if($isi==$_POST['selected']){
+            //}else{
+                echo "<option value=\"".$isi."\">".$isi."</option>";
+            //}
+		}
+		echo "<option value=\"Yang Lain (Others)\">Yang Lain (Others)</option>";
+		
+		echo "
+			<script>
+			$(document).ready(function(){
+					$(\"#".$_POST['id_select_bidang']."\").click(function(){
+					var tampilkan = $(\"#sub_bidang_opd\");
+					//tampilkan.html('OK BRO MASUK......');
+					var nilai_opd = $(\"#".$_POST['id_combo_opd']."\").val();
+					var nilai_bidang = $(\"#".$_POST['id_select_bidang']."\").val();
+					//alert(nilai_bidang);
+					//tampilkan.html('INI ADALAH: id_combo_opd');
+					$.post('".site_url("/Frontoffice/form_combo_database_json_2_sub_bidang/").$table."/opd/bidang/sub_bidang',{nilai_opd:nilai_opd, nilai_bidang:nilai_bidang, selected:\"".$_POST['selected']."\"},
+					function(data,status){
+						tampilkan.html(data);
+						tampilkan.fadeIn(2000);
+					});
+				});
+			});
+			</script>
+		";
+	}
+
+	public function form_combo_database_json_ditujukanke_2($table='table_opd',$opd='opd',$kolom_target='bidang'){
+		$nilai_opd=$this->config->item('nama_opd_panjang');
+        $query=$this->model_frommyframework->akses_bidang_opd_table_opd($table,$opd,$nilai_opd,$kolom_target);
+		echo "<option value=\"\" selected>Klik untuk memilih</option>";
+        foreach($query as $k=>$isi){
+            //if($isi==$_POST['selected']){
+            //}else{
+                echo "<option value=\"".$isi."\">".$isi."</option>";
+            //}
+        }
+		echo "<option value=\"Yang Lain (Others)\">Yang Lain (Others)</option>";
+
+		echo "
+			<script>
+			$(document).ready(function(){
+					$(\"#".$_POST['id_select_bidang']."\").click(function(){
+					var tampilkan = $(\"#sub_bidang_opd_ditujukanke\");
+					//tampilkan.html('OK BRO MASUK......');
+					var nilai_opd = '$nilai_opd';
+					var nilai_bidang = $(\"#".$_POST['id_select_bidang']."\").val();
+					//alert(nilai_bidang);
+					//tampilkan.html('INI ADALAH: id_combo_opd');
+					$.post('".site_url("/Frontoffice/form_combo_database_json_2_sub_bidang/").$table."/opd/bidang/sub_bidang',{nilai_opd:nilai_opd, nilai_bidang:nilai_bidang, selected:\"".$_POST['selected']."\"},
+					function(data,status){
+						tampilkan.html(data);
+						tampilkan.fadeIn(2000);
+					});
+				});
+			});
+			</script>
+		";
+	}
+	
+	public function form_combo_database_json_2_old($table='table_opd',$opd='opd',$kolom_target='bidang'){
+        $query=$this->model_frommyframework->akses_bidang_opd_table_opd($table,$opd,$_POST['nilai_opd'],$kolom_target);
+        echo "<select class=\"".$_POST['class']."\" id=\"".$_POST['id']."\" name=\"".$_POST['nama_komponen']."\" ".$_POST['atribut'].">";
+        foreach($query as $k=>$isi){
+            if($isi==$_POST['selected']){
+                echo "<option value=\"".$isi."\" selected>".$isi."</option>";
+            }else{
+                echo "<option value=\"".$isi."\">".$isi."</option>";
+            }
+        }
+		echo "</select>";
+		
+		echo "
+			<script>
+			$(document).ready(function(){
+					$(\"#".$_POST['id']."\").click(function(){
+					var tampilkan = $(\"#sub_bidang_opd\");
+					//tampilkan.html('OK BRO MASUK......');
+					var nilai_opd = $(\"#".$_POST['id_combo_opd']."\").val();
+					var nilai_bidang = $(\"#".$_POST['id']."\").val();
+					//alert(nilai_bidang);
+					//tampilkan.html('INI ADALAH: id_combo_opd');
+					$.post('".site_url("/Frontoffice/form_combo_database_json_2_sub_bidang/").$table."/opd/bidang/sub_bidang',{nilai_opd:nilai_opd, nilai_bidang:nilai_bidang, nama_komponen:\"sementara_".$_POST['nama_komponen']."\", class:\"".$_POST['class']."\", id:\"sementara_".$_POST['id']."\", atribut:\"".$_POST['atribut']."\", selected:\"".$_POST['selected']."\"},
+					function(data,status){
+						tampilkan.html(data);
+						tampilkan.fadeIn(2000);
+					});
+				});
+			});
+			</script>
+		";
+	}
+
+	public function tes_combo($a1,$a2,$a3,$a4){
+		echo "OK BRO INI tes_combo <br>";
+		echo $a1."==>".$a2."==>".$a3."==>".$a4;
+		echo "<br>";
+		echo "nilai_opd: ".$_POST['nilai_opd'];
+		echo "<br>";
+		echo "nilai_bidang: ".$_POST['nilai_bidang'];
+		echo "<br>";
+		echo "nama_komponen: ".$_POST['nama_komponen'];
+		echo "<br>";
+		echo "class: ".$_POST['class'];
+		echo "<br>";
+		echo "id: ".$_POST['id'];
+		echo "<br>";
+		echo "atribut: ".$_POST['atribut'];
+		echo "<br>";
+		echo "selected: ".$_POST['selected'];
+	}
+	
+	public function form_combo_database_json_2_sub_bidang($table='table_opd',$opd='opd',$bidang='bidang',$kolom_target='sub_bidang'){
+		$kolom2_rujukan=array($opd=>$_POST['nilai_opd'],$bidang=>$_POST['nilai_bidang']);
+		$query=$this->model_frommyframework->akses_sub_bidang_opd_table_opd($table,$opd,$bidang,$kolom2_rujukan);
+        //echo "<select class=\"".$_POST['class']."\" id=\"".$_POST['id']."\" name=\"".$_POST['nama_komponen']."\" ".$_POST['atribut'].">";
+		echo "<option value=\"\" selected>Klik untuk memilih</option>";
+        foreach($query as $k=>$isi){
+            //if($isi==$_POST['selected']){
+            //}else{
+                echo "<option value=\"".$isi."\">".$isi."</option>";
+            //}
+        }
+		echo "<option value=\"Yang Lain (Others)\">Yang Lain (Others)</option>";
+		//echo "</select>";
+		
+    }
+    //===========================================END #0002==================================================================================
+
 	//===========================================TAMBAHAN UNTUK MENU SEARCH AKUN TAMU======================================================
 	public function tampilkan_tombol_search_tamu_kompleks(){
 		echo "OK BRO tampilkan_tombol_search_kompleks";
@@ -1392,7 +1583,7 @@ class Frontoffice extends CI_Controller {
 	//===========================================END FUNGSI API BARU UNTUK DIGUNAKAN TERUSAN SURAT FRONTOFFICE=============================
 
 	//===========================================PENAMBAHAN FUNGSI BARU UNTUK UNGGAH SURAT BERKAS DARI RUANGKABAN==========================
-	public function frontoffice_unggahberkas_dari_ruangkaban($alamat)
+	public function frontoffice_unggahberkas_dari_ruangkaban_old($alamat)
 	{
 		//$this->header_lengkap_bootstrap_controller();
 		$this->session->set_userdata('alamat_dashboard',$alamat);
@@ -1424,7 +1615,7 @@ class Frontoffice extends CI_Controller {
 		$coba[9][6]='Dari Satker atau OPD';
 		$coba[9][0]='combo_database';
 		$coba[9][7]=array("nama_satker","nama_satker",'satuan_kerja'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		$coba[9][8]='Yang Lain (Others)';
+		//$coba[9][8]='Yang Lain (Others)';
 
 		$coba[10][0]='combo_database';
 		$coba[10][7]=array("nama_bidang","nama_bidang",'bidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
@@ -1518,8 +1709,163 @@ class Frontoffice extends CI_Controller {
 		$this->form_general_2_vertikal_non_iframe_controller($komponen,$atribut_form,$array_option,$atribut_table,$judul,$tombol,$value_selected_combo,$target_action,$submenu,$aksi,$perekam_id_untuk_button_ajax,$class='form-control',$target_ajax='',$data_ajax=NULL);
 		
 	}
+	public function frontoffice_unggahberkas_dari_ruangkaban($alamat)//popop
+	{
+		//$this->header_lengkap_bootstrap_controller();
+		$judul="<span style=\"font-size:20px;font-weight:bold;\" >UPLOAD SURAT DAN BERKAS PENDUKUNG</span>";
+		$tabel="surat_masuk";
+		$coba=array();
+		$id='idsurat_masuk';
+		$aksi='tambah';
+		if (!($aksi=="cari") and !($aksi=="tampil_semua")) $coba=$this->pengisi_komponen_controller($id,$tabel,$aksi);
+		//deskripsi $komponen=array($type 0,$nama_komponen 1,$class 2,$id 3,$atribut 4,$event 5,$label 6,$nilai_awal_atau_nilai_combo 7. $selected 8)
+		$coba=$this->pengisi_awal_combo ($id,$tabel,$coba);
+		//deskripsi combo_database: $type='combo_database',$nama_komponen,$class,$id,$atribut,$kolom,$tabel,$selected
+
+		//reset form sebelum dibuka:
+		foreach($coba as $key=>$k){
+			$coba[$key][7]='';
+		}
+
+		/*
+		$coba[3][0]='combo_database';
+		$coba[3][7]=array("bidang","bidang",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[3][8]='Yang Lain (Others)';
+		*/
+		$coba[3][0]='combo_database_json_3';
+		$coba[3][3]='ditujukan_ke_bidang_opd';
+		$coba[3][7]=array("bidang","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[3][8]='Yang Lain (Others)';
+
+		#perbaikan 25 agustus 2020
+		/*
+		$coba[7][0]='text';
+		//$coba[7][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[7][7]='Sekretariat '.$this->config->item('nama_opd').'';//sub_bidang_opd_ditujukanke
+		*/
+		
+		$coba[7][0]='combo_database_json_2';
+		$coba[7][3]='sub_bidang_opd_ditujukanke';
+		$coba[7][7]=array("sub_bidang","bidang","opd",'table_opd',NULL,$coba[3][3],"Klik kolom \"Ditujukan Ke\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[7][8]='Yang Lain (Others)';
+
+		$coba[8][0]='combo_database';
+		$coba[8][7]=array("status_pengirim","status_pengirim",'status_pengirim'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[8][8]='Yang Lain (Others)';
+		$coba[8][0]='hidden';
+
+		#perbaikan 25 agustus 2020
+		$coba[9][6]='<b>Dari Satker atau OPD</b>';
+		$coba[9][0]='combo_database';
+		$coba[9][3]='combo_opd';
+		$coba[9][7]=array("opd","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[9][8]='DINAS PENDIDIKAN';
+
+		$coba[10][0]='combo_database_json';
+		$coba[10][3]='bidang_opd';
+		$coba[10][7]=array("bidang","opd",'table_opd',$coba[9][3],"Klik kolom \"Dari Satker atau OPD\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[10][8]='Yang Lain (Others)';
+
+		
+		$coba[11][0]='combo_database_json_2';
+		$coba[11][3]='sub_bidang_opd';
+		$coba[11][7]=array("sub_bidang","bidang","opd",'table_opd',$coba[9][3],$coba[10][3],"Klik kolom \"Dari Bidang\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[11][8]='Yang Lain (Others)';
+
+		#perbaikan 25 agustus 2020
+		//$coba[11][0]='text';
+		//$coba[11][7]=array("nama_subbidang","nama_subbidang",'subbidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[11][7]='Yang Lain (Others)';
+
+		#perbaikan 25 agustus 2020
+		$coba[12][0]='hidden';
+		$coba[12][7]=implode("-",array (date("d/m/Y"),date("H:i:s"),mt_rand (1000,9999),microtime()));
+		$coba[12][4]='readonly';
+
+		#perbaikan 25 agustus 2020
+		$coba[13][0]='file';
+		$coba[14][0]='file';
+		#inshaa Allah rencana kedepan:
+		//$coba[13][4]=' multiple ';
+		//$coba[14][4]=' multiple ';
+
+		$coba[13][6]='<span style="font-size:20px;color:red;font-weight:bold;">Unggah Surat</span>';
+		$coba[14][6]='<span style="font-size:20px;color:red;font-weight:bold;">Unggah Berkas Pendukung</span>';
+
+		$coba[15][0]='hidden';
+		$coba[16][0]='hidden';
+
+		$coba[17][0]='hidden';
+		$coba[18][0]='hidden';
+
+		$coba[19][0]='hidden';
+		$coba[20][0]='hidden';
+
+		$coba[21][0]='hidden';
+		$coba[22][0]='hidden';
+
+		$coba[23][0]='hidden';
+		$coba[24][0]='hidden';
+
+		$coba[25][0]='hidden';
+		$coba[26][0]='hidden';
+		$coba[29][0]='hidden';
+
+		$coba[27][0]='combo_manual';
+		$coba[27][7]=array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[27][8]=3;
+		$coba[27][0]='hidden';
+
+		$coba[28][0]='combo_database';
+		$coba[28][7]=array("nama_urgensi_surat","nama_urgensi_surat",'urgensi_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[28][8]='Yang Lain (Others)';
+		$coba[28][0]='hidden';
+
+		$coba[29][0]='hidden';
+		$coba[29][1]='kode_tambahan';
+		$coba[29][7]=implode("",array (mt_rand (1000,9999),date("d/m/Y")));
+		$coba[29][4]='readonly';
+
+		
+
+		/*
+		UNTUK DIPAHAMI ULANG:
+		case ("upload") :
+			//echo "submenu_userpelanggan";	
+			$oke=$_SESSION['perekam1'];
+			$nama=$_GET['nama'];
+			$lokasi=$_GET['lokasi'];
+			echo "HKJHKJHASK";
+			foreach ($oke as $isi) {
+			if (!(($isi[type]=='button') || ($isi[type]=='button_ajax') || ($isi[type]=='submit'))) {echo "<br />".$_POST[$isi[nama_komponen]];}}
+			upload($nama,$lokasi,'txt,jpg,jpeg,gif,png');
+		*/
+		//$coba[9][6]='target_surat'; //ini label
+		$komponen=$coba;
+		//$atribut_form='';
+		$array_option='';
+		$atribut_table=array('table'=>"class=\"table table-condensed\"",'tr'=>"",'td'=>"",'th'=>"");
+		//deskripsi untuk tombol ke-i, $tombol[$i]=array($type 0,$nama_komponen 1,$class 2,$id 3,$atribut 4,$event 5,$label 6,$nilai_awal 7)
+		//$tombol[0]=array('submit','submit','btn btn-primary','submit','','','','Submit','');
+
+		//Kalau menggunakan submit_multi jangan lupa menggunakan atribut form ini.
+		$target_action="Frontoffice/frontoffice_index_untuk_ruangkaban/$alamat";
+		$atribut_form=" id=\"form_unggah_berkas\" method=\"POST\" enctype=\"multipart/form-data\" action=\"".site_url($target_action)."\" ";
+		
+		$tombol[0]=array('submit_multi_3','submit_nama_komponen_frontoffice','btn btn-primary','id-baru-frontoffice','',array(site_url('/Frontoffice/terima_arsip_surat_keluar_TIDAK_DIGUNAKAN'),$this->config->item('bank_data').'/index.php/Frontoffice/terima_arsip_surat_keluar_frontoffice'),'','Unggah','');
+		$tombol[1]=array('reset','reset','btn btn-warning','reset','','','','Reset','');
+		//$tombol[0]=array('button_ajax_get_CI','button_ajax_get_CI','btn btn-info','button_ajax_get_CI','','','','Kirim','');
+		$value_selected_combo='';
+		$submenu='submenu';
+		$aksi='tambah';
+		$perekam_id_untuk_button_ajax='';
+		$class='form-control';
+		//$this->form_general_2_controller($komponen,$atribut_form,$array_option,$atribut_table,$judul,$tombol,$value_selected_combo,$target_action,$submenu,$aksi,$perekam_id_untuk_button_ajax,$class='form-control');
+		$this->form_general_2_vertikal_non_iframe_controller($komponen,$atribut_form,$array_option,$atribut_table,$judul,$tombol,$value_selected_combo,$target_action,$submenu,$aksi,$perekam_id_untuk_button_ajax,$class='form-control',$target_ajax='',$data_ajax=NULL);
+		
+	}
 	
-	public function frontoffice_index_untuk_ruangkaban()
+	public function frontoffice_index_untuk_ruangkaban($alamat)#popo2
 	{
 		/*
 		$user = $this->session->userdata('user');
@@ -1529,6 +1875,8 @@ class Frontoffice extends CI_Controller {
 		
 		if(($user!==FALSE)&&($str==$hash)){
 		*/
+			$alamat_dekrip = $this->enkripsi->dekapsulasiData($alamat);
+
 			if(isset($_POST['data_nama'])){
 				$data_post=array();
 				$directory_relatif_file_upload='./public/surat_dan_berkas_masuk/';	
@@ -1553,10 +1901,13 @@ class Frontoffice extends CI_Controller {
 							array_push($kiriman,implode("-",array (date("d/m/Y"),date("H:i:s"),mt_rand (1000,9999),microtime())));
 						}else if($key=='posisi_surat_terakhir'){
 							array_push($kiriman,"Front Office ".$this->config->item('nama_opd')."");
+						}else if($key=='status_surat'){
+							array_push($kiriman,"masuk");
 						}else{
 							array_push($kiriman,$k['nilai']);
 						}
 					}
+
 					$kiriman[13]=$upload1[0];
 					$kiriman[14]=$upload2[0];
 					if($kiriman[13]) {$kiriman[15]=$directory_relatif_file_upload.$upload1[0];}else{$kiriman[15]=NULL;}
@@ -1622,16 +1973,24 @@ class Frontoffice extends CI_Controller {
 				array_push($upload,$upload2);
 				$data_upload['data_upload']=$upload;
 				$data_upload['src']="Frontoffice/pdf/".$this->enkripsi->strToHex(serialize($data_pdf))."/".$this->enkripsi->strToHex(serialize($date_note));
+				$data_upload['kiriman_enkrip']=$this->enkripsi->enkapsulasiData($kiriman);#popo1
 				
 				//End Perubahan 24/09/2020 : 21:23
 
 				//print_r($data_upload);
 				//$this->load->view('index',$data_upload);
+				if($hasil_insersi_surat_berkas){
+					redirect($alamat_dekrip."/".$data_upload['kiriman_enkrip']."/lakukan_log");
+				}else{
+					redirect($alamat_dekrip."/gagal/lakukan_log/gagal");
+				}
+				/*
 				$data_kiriman_enkrip=$this->enkripsi->strToHex(serialize($data_pdf));
 				$date_note_enkrip=$this->enkripsi->strToHex(serialize($date_note));
 				$this->cetak_pdf_ruangkaban($data_kiriman_enkrip,$date_note_enkrip);
+				*/
 			} else {
-				echo "DATA GAGAL DIUNGGAH";
+				redirect($alamat_dekrip."/gagal/lakukan_log/gagal");
 			}
 		/*
 		}else {
@@ -11663,9 +12022,28 @@ class Frontoffice extends CI_Controller {
 			$coba[$key][7]='';
 		}
 
+		#===========================================
+		$coba[3][0]='combo_database_json_3';
+		$coba[3][3]='ditujukan_ke_bidang_opd';
+		$coba[3][7]=array("bidang","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[3][8]='Yang Lain (Others)';
+
+		#perbaikan 25 agustus 2020
+		/*
+		$coba[7][0]='text';
+		//$coba[7][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[7][7]='Sekretariat '.$this->config->item('nama_opd').'';//sub_bidang_opd_ditujukanke
+		*/
 		
-		$coba[6][0]='combo_database';
-		$coba[6][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[6][0]='combo_database_json_2';
+		$coba[6][3]='sub_bidang_opd_ditujukanke';
+		$coba[6][7]=array("sub_bidang","bidang","opd",'table_opd',NULL,$coba[3][3],"Klik kolom \"Ditujukan Ke\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[6][8]='Yang Lain (Others)';
+		#===========================================
+		
+		#$coba[6][0]='combo_database';
+		#$coba[6][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		
 		$coba[7][0]='hidden';
 		$coba[7][7]='ASN internal';
 		
@@ -11675,6 +12053,7 @@ class Frontoffice extends CI_Controller {
 		$coba[9][7]='Front Office '.$this->config->item('nama_opd').'';
 		//$coba[10][0]='combo_manual';
 		//$coba[10][7]=array('Sekretaris Badan','Kasubbag Program','Kasubbag Keuangan','Kasubbag Umum, Kepegawaian');
+		$coba[10][0]='hidden';//ini khusus frontoffice, ruangkaban, bankdata dan sekretariat, untuk semua bidang tidak berlaku.
 		$coba[11][0]='hidden';
 		$coba[11][7]=implode("-",array (date("d/m/Y"),date("H:i:s"),mt_rand (1000,9999),microtime()));
 
@@ -11687,16 +12066,22 @@ class Frontoffice extends CI_Controller {
 		$coba[14][0]='hidden';
 		$coba[15][0]='hidden';
 
+		/*
 		$coba[16][4]='';
-		$coba[16][6]='<b>Diteruskan ke</b>';
+		$coba[16][6]='<b>Diteruskan ke</b>';//popo3
 		$coba[16][0]='combo_database';
 		$coba[16][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		
+		*/
+		$coba[16][0]='hidden';
+
 		$coba[17][0]='area';
+		/*
 		$coba[18][4]='';
 		$coba[18][0]='combo_database';
 		$coba[18][7]=array("nama_status","nama_status",'status_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		
+		*/
+		$coba[18][0]='hidden';
+
 		$coba[19][0]='hidden';
 		$coba[20][0]='hidden';
 		$coba[21][0]='hidden';
@@ -11705,8 +12090,11 @@ class Frontoffice extends CI_Controller {
 		$coba[24][0]='hidden';
 
 		$coba[25][7]='Front Office '.$this->config->item('nama_opd').'';
+		$coba[25][0]='hidden';
+		
 		$coba[28][0]='hidden';
-
+		
+		/*
 		$coba[26][0]='combo_manual';
 		$coba[26][7]=array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[26][8]=3;
@@ -11714,6 +12102,10 @@ class Frontoffice extends CI_Controller {
 		$coba[27][0]='combo_database';
 		$coba[27][7]=array("nama_urgensi_surat","nama_urgensi_surat",'urgensi_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[27][8]='Yang Lain (Others)';
+		*/
+		
+		$coba[26][0]='hidden';
+		$coba[27][0]='hidden';
 		
 		/*
 		UNTUK DIPAHAMI ULANG:
@@ -14844,7 +15236,7 @@ class Frontoffice extends CI_Controller {
 				array_push($upload,$upload2);
 				$data_upload['data_upload']=$upload;
 				$data_upload['src']="Frontoffice/pdf/".$this->enkripsi->strToHex(serialize($data_pdf))."/".$this->enkripsi->strToHex(serialize($date_note));
-				$data_upload['kiriman_enkrip']=$this->enkripsi->enkapsulasiData($kiriman);
+				$data_upload['kiriman_enkrip']=$this->enkripsi->enkapsulasiData($kiriman);#popo1
 				//End Perubahan 24/09/2020 : 21:23
 
 				//print_r($data_upload);
@@ -15170,10 +15562,10 @@ class Frontoffice extends CI_Controller {
 			cetak_tiket_pdf($data);
 	}
 	
-	public function frontoffice_unggahberkas()
+	public function frontoffice_unggahberkas()//popop
 	{
 		//$this->header_lengkap_bootstrap_controller();
-		$judul="<span style=\"font-size:20px;font-weight:bold;\">UPLOAD SURAT DAN BERKAS PENDUKUNG</span>";
+		$judul="<span style=\"font-size:20px;font-weight:bold;\" >UPLOAD SURAT DAN BERKAS PENDUKUNG</span>";
 		$tabel="surat_masuk";
 		$coba=array();
 		$id='idsurat_masuk';
@@ -15188,27 +15580,53 @@ class Frontoffice extends CI_Controller {
 			$coba[$key][7]='';
 		}
 
+		/*
+		$coba[3][0]='combo_database';
+		$coba[3][7]=array("bidang","bidang",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[3][8]='Yang Lain (Others)';
+		*/
+		$coba[3][0]='combo_database_json_3';
+		$coba[3][3]='ditujukan_ke_bidang_opd';//popo4
+		$coba[3][7]=array("bidang","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[3][8]='Yang Lain (Others)';
+
 		#perbaikan 25 agustus 2020
+		/*
 		$coba[7][0]='text';
 		//$coba[7][7]=array("target","target",'target_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		$coba[7][7]='Sekretariat '.$this->config->item('nama_opd').'';
+		$coba[7][7]='Sekretariat '.$this->config->item('nama_opd').'';//sub_bidang_opd_ditujukanke
+		*/
+		
+		$coba[7][0]='combo_database_json_2';
+		$coba[7][3]='sub_bidang_opd_ditujukanke';
+		$coba[7][7]=array("sub_bidang","bidang","opd",'table_opd',NULL,$coba[3][3],"Klik kolom \"Ditujukan Ke\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[7][8]='Yang Lain (Others)';
 
 		$coba[8][0]='combo_database';
 		$coba[8][7]=array("status_pengirim","status_pengirim",'status_pengirim'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		$coba[8][8]='ASN internal';
+		$coba[8][8]='Yang Lain (Others)';
+		$coba[8][0]='hidden';
 
 		#perbaikan 25 agustus 2020
-		$coba[9][6]='Dari Satker atau OPD';
+		$coba[9][6]='<b>Dari Satker atau OPD</b>';
 		$coba[9][0]='combo_database';
-		$coba[9][7]=array("nama_satker","nama_satker",'satuan_kerja'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
-		$coba[9][8]='Yang Lain (Others)';
+		$coba[9][3]='combo_opd';
+		$coba[9][7]=array("opd","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[9][8]='';
 
-		$coba[10][0]='combo_database';
-		$coba[10][7]=array("nama_bidang","nama_bidang",'bidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[10][0]='combo_database_json';
+		$coba[10][3]='bidang_opd';
+		$coba[10][7]=array("bidang","opd",'table_opd',$coba[9][3],"Klik kolom \"Dari Satker atau OPD\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[10][8]='Yang Lain (Others)';
 
+		
+		$coba[11][0]='combo_database_json_2';
+		$coba[11][3]='sub_bidang_opd';
+		$coba[11][7]=array("sub_bidang","bidang","opd",'table_opd',$coba[9][3],$coba[10][3],"Klik kolom \"Dari Bidang\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[11][8]='Yang Lain (Others)';
+
 		#perbaikan 25 agustus 2020
-		$coba[11][0]='text';
+		//$coba[11][0]='text';
 		//$coba[11][7]=array("nama_subbidang","nama_subbidang",'subbidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		//$coba[11][7]='Yang Lain (Others)';
 
@@ -15249,15 +15667,19 @@ class Frontoffice extends CI_Controller {
 		$coba[27][0]='combo_manual';
 		$coba[27][7]=array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[27][8]=3;
+		$coba[27][0]='hidden';
 
 		$coba[28][0]='combo_database';
 		$coba[28][7]=array("nama_urgensi_surat","nama_urgensi_surat",'urgensi_surat'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[28][8]='Yang Lain (Others)';
+		$coba[28][0]='hidden';
 
 		$coba[29][0]='hidden';
 		$coba[29][1]='kode_tambahan';
 		$coba[29][7]=implode("",array (mt_rand (1000,9999),date("d/m/Y")));
 		$coba[29][4]='readonly';
+
+		
 
 		/*
 		UNTUK DIPAHAMI ULANG:
@@ -15510,6 +15932,7 @@ class Frontoffice extends CI_Controller {
 
 		$coba[5][6]='<b>NIP (jika pegawai)</b>';
 
+		/*
 		$coba[8][0]='combo_database';
 		$coba[8][7]=array("nama_satker","nama_satker",'satuan_kerja'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[8][6]='<b>Asal Satuan Kerja/OPD (jika pegawai)</b>';
@@ -15524,6 +15947,29 @@ class Frontoffice extends CI_Controller {
 		$coba[10][7]=array("nama_subbidang","nama_subbidang",'subbidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[10][8]='Yang Lain (Others)';
 		$coba[10][6]='<b>Asal Subbidang (jika pegawai)</b>';
+		*/
+		#=====================================
+		#perbaikan 25 agustus 2020
+		$coba[8][6]='<b>Asal Satuan Kerja/OPD (jika pegawai)</b>';
+		$coba[8][0]='combo_database';
+		$coba[8][3]='combo_opd';
+		$coba[8][7]=array("opd","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		//$coba[9][8]='DINAS PENDIDIKAN';
+
+		$coba[9][0]='combo_database_json';
+		$coba[9][3]='bidang_opd';
+		$coba[9][7]=array("bidang","opd",'table_opd',$coba[8][3],"Klik kolom \"Asal Satuan Kerja/OPD\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[9][8]='Yang Lain (Others)';
+		$coba[9][6]='<b>Asal Bidang (jika pegawai)</b>';
+
+		
+		$coba[10][0]='combo_database_json_2';
+		$coba[10][3]='sub_bidang_opd';
+		$coba[10][7]=array("sub_bidang","bidang","opd",'table_opd',$coba[8][3],$coba[9][3],"Klik kolom \"Asal Bidang\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+		$coba[10][8]='Yang Lain (Others)';
+		$coba[10][6]='<b>Asal Subbidang (jika pegawai)</b>';
+
+		#=====================================
 
 		$coba[11][0]='combo_database';
 		$coba[11][7]=array("nama_provinsi","nama_provinsi",'provinsi'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
@@ -15541,10 +15987,12 @@ class Frontoffice extends CI_Controller {
 		$coba[14][7]=array("nama_kelurahan","nama_kelurahan",'kelurahan'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 		$coba[14][8]='Yang Lain (Others)';
 
+		/*
 		$coba[15][0]='date';
 		$coba[15][6]='<b>Password berlaku mulai</b>';
 		$coba[16][0]='date';
 		$coba[16][6]='<b>Password berlaku sampai</b>';
+		*/
 		$coba[17][0]='hidden';
 		$coba[18][7]=implode("-",array (date("d/m/Y"),date("H:i:s"),mt_rand (1000,9999),microtime()));
 		$coba[18][4]='readonly';

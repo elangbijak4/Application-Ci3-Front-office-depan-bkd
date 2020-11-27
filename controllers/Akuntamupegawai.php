@@ -36,21 +36,76 @@ class Akuntamupegawai extends CI_Controller {
 		$this->load->view('loginpage_pegawai');
 	}
 
-	public function index_dashboard(){
-		$this->load->view("admin_frontoffice/dashboard_tamupegawai");
+	public function index_dashboard($penerima=NULL,$penanda_untuk_log=NULL,$gagal=NULL,$data_kiriman_enkrip=NULL,$date_note_enkrip=NULL){
+		$user = $this->session->userdata('user_frontoffice_tamupegawai');
+        //$str = $user['email'].$user['username']."1@@@@@!andisinra";
+        //$str = hash("sha256", $str );
+		$hash=$this->session->userdata('hash');
+		//print_r($user);
+		//echo $user;
+		
+		if($user!=NULL){
+			$flip_flop = $this->session->userdata('flag0002');
+
+			if(($penanda_untuk_log=='lakukan_log')&&($penerima!='')&&($gagal!='gagal')&&($flip_flop=='ok_go_ahead')){
+				$data['kiriman_enkrip']=$penerima;
+				$data['data_kiriman_enkrip_f']=$data_kiriman_enkrip;
+				$data['date_note_enkrip_f']=$date_note_enkrip;
+				$data['src']="Frontoffice/pdf/".$data_kiriman_enkrip."/".$date_note_enkrip;
+				//alert('masuk sini 1');
+				//alert($penerima);
+				$this->load->view("admin_frontoffice/dashboard_tamupegawai",$data);
+			}else if(($gagal=='gagal')&&($flip_flop=='ok_go_ahead')){
+				$data['gagal']='gagal';
+				//alert('masuk sini 2');
+				$this->load->view("admin_frontoffice/dashboard_tamupegawai",$data);
+			}else{
+				$this->load->view("admin_frontoffice/dashboard_tamupegawai");
+			}
+		}else {
+			redirect(site_url('Akuntamupegawai/index')); 
+		}
 	}
 
-	public function index_dashboard_pegawai($data=NULL,$pesan=NULL){
-		if($data!==NULL){
-			$data=$this->enkripsi->dekapsulasiData($data);
-			if(isset($data['direktori_foto'][0])) $data['nipbaru'][0]=$data['direktori_foto'][0];
-			$this->session->set_userdata('user_pegawai',serialize($data));
-			//print_r($this->session->userdata('user_pegawai'));
+	public function index_dashboard_pegawai($penerima=NULL,$penanda_untuk_log=NULL,$gagal=NULL,$data_kiriman_enkrip=NULL,$date_note_enkrip=NULL,$data=NULL,$pesan=NULL){
+		
+		$user = $this->session->userdata('user_frontoffice_pegawai');
+        //$str = $user['email'].$user['username']."1@@@@@!andisinra";
+        //$str = hash("sha256", $str );
+		$hash=$this->session->userdata('hash');
+		//print_r($user);
+		//echo $user;
+		
+		if($user!=NULL){
+			if($data!==NULL){
+				$data=$this->enkripsi->dekapsulasiData($data);
+				if(isset($data['direktori_foto'][0])) $data['nipbaru'][0]=$data['direktori_foto'][0];
+				$this->session->set_userdata('user_pegawai',serialize($data));
+				//print_r($this->session->userdata('user_pegawai'));
+			}
+			if($this->session->userdata('toggle')==TRUE){
+				if($pesan!==NULL) {alert($pesan);$this->session->set_userdata('toggle',FALSE);}
+			}
+			
+			$flip_flop = $this->session->userdata('flag0002');
+
+			if(($penanda_untuk_log=='lakukan_log')&&($penerima!='')&&($gagal!='gagal')&&($flip_flop=='ok_go_ahead')){
+				$data['kiriman_enkrip']=$penerima;
+				$data['data_kiriman_enkrip_f']=$data_kiriman_enkrip;
+				$data['date_note_enkrip_f']=$date_note_enkrip;
+				$data['src']="Frontoffice/pdf/".$data_kiriman_enkrip."/".$date_note_enkrip;
+				//alert('masuk sini 1');
+				//alert($penerima);
+				$this->load->view("admin_frontoffice/dashboard_pegawai",$data);
+			}else if(($gagal=='gagal')&&($flip_flop=='ok_go_ahead')){
+				$data['gagal']='gagal';
+				$this->load->view("admin_frontoffice/dashboard_pegawai",$data);
+			}else{
+				$this->load->view("admin_frontoffice/dashboard_pegawai");
+			}
+		}else {
+			redirect(site_url('Akuntamupegawai/index_pegawai')); 
 		}
-		if($this->session->userdata('toggle')==TRUE){
-			if($pesan!==NULL) {alert($pesan);$this->session->set_userdata('toggle',FALSE);}
-		}
-		$this->load->view("admin_frontoffice/dashboard_pegawai");
 	}
 
 	
@@ -2343,8 +2398,9 @@ class Akuntamupegawai extends CI_Controller {
 	}
 
 	//========TEMPAT TAMBAHAN DILUAR KELAS Frontoffice=========================================================================================
-	public function tampilkan_profil_tamupegawai($username){
-		$this->viewfrommyframework->penampil_tabel_akun_tamu_pegawai ($array_atribut=array(""," class=\"table table-bordered\"",""),$query_yang_mau_ditampilkan="select * from tamu where username=\"".$username."\"",$submenu='',$kolom_direktori='direktori_foto',$direktori_avatar='/public/img/no-image.jpg');
+	public function tampilkan_profil_tamupegawai($idtamu=NULL){
+		//echo "INI ID TAMU: ".$idtamu;
+		$this->viewfrommyframework->penampil_tabel_akun_tamu_pegawai ($array_atribut=array(""," class=\"table table-bordered\"",""),$query_yang_mau_ditampilkan="select * from tamu where idtamu=\"".$idtamu."\"",$submenu='',$kolom_direktori='direktori_foto',$direktori_avatar='/public/img/no-image.jpg');
 	} 
 
 	public function tampilkan_profil_pegawai($nipbaru=NULL){
@@ -2666,16 +2722,39 @@ class Akuntamupegawai extends CI_Controller {
 */
 
 					$coba[2][0]="text";
-					$coba[3][0]='text';
-					$coba[3][4]=" readonly ";
+					$coba[3][0]='hidden';
+					$coba[3][4]="readonly";
 
-					$coba[5][6]='<b>NIP (jika pegawai)</b>';
+					$coba[5][6]='<b>NIP (jika pegawai)</b>';//popok
 
+					#=============================================================
+					#perbaikan 25 agustus 2020
+					$coba[8][6]='<b>Asal Satuan Kerja/OPD (jika pegawai)</b>';
+					$coba[8][0]='combo_database';
+					$coba[8][3]='combo_opd';
+					$coba[8][7]=array("opd","opd",'table_opd'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+					//$coba[9][8]='';
+
+					$coba[9][0]='combo_database_json';
+					$coba[9][6]='<b>Asal Bidang (jika pegawai)</b>';
+					$coba[9][3]='bidang_opd';
+					$coba[9][7]=array("bidang","opd",'table_opd',$coba[8][3],"Klik kolom \"Asal Satuan Kerja/OPD\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+					$coba[9][8]='Yang Lain (Others)';
+
+					
+					$coba[10][0]='combo_database_json_2';
+					$coba[10][3]='sub_bidang_opd';
+					$coba[10][7]=array("sub_bidang","bidang","opd",'table_opd',$coba[8][3],$coba[9][3],"Klik kolom \"Asal Bidang\" untuk memunculkan pilihan"); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
+					$coba[10][8]='Yang Lain (Others)';
+					$coba[10][6]='<b>Asal Subbidang (jika pegawai)</b>';
+					#=============================================================
+
+					/*OLD
 					$coba[8][0]='combo_database';
 					$coba[8][7]=array("nama_satker","nama_satker",'satuan_kerja'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 					$coba[8][6]='<b>Asal Satuan Kerja/OPD (jika pegawai)</b>';
 					//$coba[8][8]='Yang Lain (Others)';
-
+					
 					$coba[9][0]='combo_database';
 					$coba[9][7]=array("nama_bidang","nama_bidang",'bidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 					//$coba[9][8]='Yang Lain (Others)';
@@ -2685,6 +2764,7 @@ class Akuntamupegawai extends CI_Controller {
 					$coba[10][7]=array("nama_subbidang","nama_subbidang",'subbidang'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
 					//$coba[10][8]='Yang Lain (Others)';
 					$coba[10][6]='<b>Asal Subbidang (jika pegawai)</b>';
+					*/
 
 					$coba[11][0]='combo_database';
 					$coba[11][7]=array("nama_provinsi","nama_provinsi",'provinsi'); //inshaa Allah gunakan ini sekarang untuk mendefinisikan combo_database, soalnya core sudah dirubah.
@@ -2706,9 +2786,13 @@ class Akuntamupegawai extends CI_Controller {
 					$coba[15][6]='<b>Password berlaku mulai</b>';
 					$coba[16][0]='date';
 					$coba[16][6]='<b>Password berlaku sampai</b>';
+					$coba[15][0]='hidden';
+					$coba[16][0]='hidden';
+
 					$coba[17][0]='hidden';
 					$coba[18][7]=implode("-",array (date("d/m/Y"),mt_rand (1000,9999),microtime()));
 					$coba[18][4]='readonly';
+					$coba[18][0]='hidden';
 					$coba[19][0]='file';
 					$coba[19][6]='<span style="font-size:20px;color:red;font-weight:bold;">Unggah Foto</span>';
 

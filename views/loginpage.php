@@ -71,7 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 		<div class="content-w3ls">
 			<div class="text-center icon">
-				<span class="text-login" style="font-size:35px;">Login Front Office</span>
+				<span class="text-login" style="font-size:35px;color:#fff">Login Front Office</span>
 			</div>
 			<div class="content-bottom">
 				<form action="<?php echo site_url('login/login/process') ?>" method="post" accept-charset="utf-8">

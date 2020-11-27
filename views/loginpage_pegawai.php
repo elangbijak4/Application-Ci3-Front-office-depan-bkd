@@ -71,7 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 		<div class="content-w3ls">
 			<div class="text-center icon">
-				<span class="text-login" style="font-size:25px;">Login Akun Pegawai</span>
+				<span class="text-login" style="font-size:25px;color:#fff;">Login Akun Pegawai</span>
 			</div>
 			<div class="content-bottom">
 				<form action="<?php echo site_url('login/logintamupegawai/process_pegawai') ?>" method="post" accept-charset="utf-8">
@@ -95,20 +95,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<label class="switch">
 								<input type="checkbox" name="remember_me">
 								<span class="slider round"></span>
-								<span style='color:white;'>Ingat Ka'</span>
+								<span style='color:white;'>Remember me</span>
 							</label>
 						</li>
 						<li>
-							<a href="#" class="text-right">Kulupai Sandina</a>
+							<a href="#" class="" id="lupa_password" data-toggle="modal" data-target="#myModal"><span style='color:white;'>Forgot password</span></a>
 						</li>
 						<li class="clearfix"></li>
 					</ul>
-					<ul class="list-login-bottom">
-						<li class="">
-							<a href="#" class="" data-toggle="modal" data-target="#myModal">Register</a>
-						</li>
+					<ul class="list-login">
 						<li class="">
 							<a href="#" class="text-right" data-toggle="modal" data-target="#myModal2">Butuh Bantuan?</a>
+						</li>
+						<li class="">
+							<a href="#" class="" id="register" data-toggle="modal" data-target="#myModal"><span style='color:white;'>Register</span></a>
 						</li>
 						<li class="clearfix"></li>
 					</ul>
@@ -116,27 +116,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 		</div>
 		<div class="bottom-grid1">
-			<div class="links">
-				<ul class="links-unordered-list">
-					<li class="">
-						<a href="#" class="">About Us</a>
-					</li>
-					<li class="">
-						<a href="#" class="">Privacy Policy</a>
-					</li>
-					<li class="">
-						<a href="#" class="">Terms of Use</a>
-					</li>
-				</ul>
-			</div>
 			<div class="copyright" style="font-size:10px;">
-				<p><a href="#">© 2020 BKD Prov. Sulsel | Design:</a>
+				<p style="font-size:5px;"><a href="#">© 2020 BKD Prov. Sulsel | Design:</a>
 					<a href="http://w3layouts.com">W3layouts</a>
 				</p>
 			</div>
 		</div>
     </div>
 </section>
+
+
+<script>      
+$(document).ready(function(){
+	$("#register").click(function(){
+		var loading = $("#pra_register");
+		var tampilkan = $("#penampil_register");
+		tampilkan.hide();
+		loading.fadeIn(); 
+		$.post('<?php echo site_url('/Frontoffice/frontoffice_register1/tamu');?>',{ data:"okbro"},
+		function(data,status){
+			loading.fadeOut();
+			tampilkan.html(data);
+			tampilkan.fadeIn(2000);
+		});
+	});
+
+	$("#lupa_password").click(function(){
+		var loading = $("#pra_register");
+		var tampilkan = $("#penampil_register");
+		tampilkan.hide();
+		loading.fadeIn(); 
+		$.post('<?php echo site_url('/Frontoffice/lupa_password/tamu');?>',{ data:"okbro"},
+		function(data,status){
+			loading.fadeOut();
+			tampilkan.html(data);
+			tampilkan.fadeIn(2000);
+		});
+	});
+});
+
+</script>
 
 <!-- Modal1 -->
 <div class="modal fade" id="myModal" role="dialog">
@@ -151,14 +170,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</h5>
 		</div>
 		<div class="modal-body">
-		<p>Silahkan mendaftar manual ke admin BKD untuk mendapatkan password</p>
+		  <center>
+          <div id='pra_register' style='width:65%;' align='center' >
+          <i class='fa-3x fas fa-spinner fa-pulse' <?php echo $this->config->item('style_progres_bulat_admin');?>></i>
+          </center>
+          <div id=penampil_register align="center" style='width:100%;overflow:auto;'></div>
 		</div>
 		<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
 		</div>
 	</div>
 	</div>
-</div>	
+</div>
 
 <!-- Modal2 -->
 <div class="modal fade" id="myModal2" role="dialog">
@@ -182,7 +205,53 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>	
 
-<?php 
+<?php
+if(isset($src_register)){
+	$this->load->library('model_frommyframework');
+	$kolom_rujukan['nama_kolom']='digest_signature_tamu';
+	$kolom_rujukan['nilai']=$signature;
+	$kolom_target='idtamu';
+	$idtamu=$this->model_frommyframework->pembaca_nilai_kolom_tertentu('tamu',$kolom_rujukan,$kolom_target);
+	#echo "INI src_register: ".$src_register;
+	#echo "<br>INI signature: ".$signature;
+	#echo "<br>INI idtamu: ".$idtamu[0];
+
+	//if($data_upload[0][0] || $data_upload[1][0]) {
+		//alert('Selamat:\nSurat dan Berkas pendukung sukses diunggah');
+		echo "
+		<!--layer untuk modalku-->
+		<div id='modalku' style='background: #777; position:fixed; left:0;right:0;top:0;bottom:0;z-index:90000; opacity:0.9;'>
+		</div>
+		<div id='panel'  style=''>
+		<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src_register)."/".$idtamu[0]."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
+		<button type=\"button\" class=\"btn btn-info okbro\" style=\"bottom:20px;right:20px; position:absolute;\" onclick='document.getElementById(\"panel\").style.display=\"none\";document.getElementById(\"modalku\").style.display=\"none\";'>Close</button>
+		<button type=\"button\" class=\"btn btn-warning\" style=\"bottom:20px;left:20px; position:absolute;\">Klik >> untuk cetak</button>
+		</div>
+		
+		<style>
+		#panel {
+			border-radius: 10px; background: #fff; position:fixed; left:30%;right:30%;top:20%;bottom:20%;z-index:90001;
+		}
+		@media screen and (max-width: 480px) {
+		#panel {
+			left:5%;
+			right:5%;
+		}
+		.okbro{
+			width:60px;
+		}
+		}
+		</style>
+		";
+	//} else {
+		//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
+	//}
+}
+
+if(isset($pesan_gagal)){
+	alert($pesan_gagal);
+}
+
 $error = $this->session->userdata('form_error');
 if ($error)
 {   

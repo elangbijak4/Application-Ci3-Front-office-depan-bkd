@@ -9,31 +9,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="<?php echo base_url('/public/asset_login_search/images/icons/favicon.png');?>"/>
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/css/bootstrap.min.css');?>">
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/fonts/font-awesome-4.7.0/css/font-awesome.min.css');?>">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/fonts/Linearicons-Free-v1.0.0/icon-font.min.css');?>">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/animate/animate.css');?>">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/css-hamburgers/hamburgers.min.css');?>">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/animsition/css/animsition.min.css');?>">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/select2/select2.min.css');?>">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/daterangepicker.css');?>">
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/util.css');?>">
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/main.css');?>">
-  <link href="<?php echo base_url('/dashboard/vendor/fontawesome-free/css/all.min.css');?>" rel="stylesheet" type="text/css">
 <!--===============================================================================================-->
-  <!-- Custom styles for this template-->
-  <script src="<?php echo base_url('/public/vendor3.4.1/jquery/3.4.1/jquery.min.js'); ?>"></script>
-  <script src="<?php echo base_url('/public/vendor3.4.1/bootstrap/3.4.1/js/bootstrap.min.js'); ?>"></script>
 </head>
 <body>
 	
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
-				<form class="login100-form validate-form flex-sb flex-w" action="<?php echo site_url('login_unggah_surat_tamu/Logintamupegawai_search/process') ?>" method="post" accept-charset="utf-8">
+				<form class="login100-form validate-form flex-sb flex-w" action="<?php echo site_url('login_unggah_surat_tamu/Logintamupegawai_search/process_pegawai') ?>" method="post" accept-charset="utf-8">
 					<span class="login100-form p-b-32">
 						<h5>Silahkan login terlebih dulu...</h5>
 					</span>
 
 					<span class="txt1 p-b-11">
-						Nomor ID Tamu
+						NIP Pegawai
 					</span>
-					<div class="wrap-input100 validate-input m-b-36" data-validate = "Id Tamu is required">
-						<input class="input100" type="text" name="idtamu" >
+					<div class="wrap-input100 validate-input m-b-36" data-validate = "Username is required">
+						<input class="input100" type="text" name="username" >
 						<span class="focus-input100"></span>
 					</div>
 					
@@ -57,14 +68,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div>
-							<a href="#" class="txt3" id="lupa_password" data-toggle="modal" data-target="#myModal">
-								Lupa Password?
+							<a href="#" class="txt3" id="lupa_password">
+								Forgot Password?
 							</a>
 						</div>
 
 						<div>
-							<a href="#" class="txt3" id="register" data-toggle="modal" data-target="#myModal">
-							Register Baru
+							<a href="#" class="txt3" id="register">
+								Register
 							</a>
 						</div>
 					</div>
@@ -73,7 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<button type="submit" class="login100-form-btn" style="width:100%;margin-bottom:10px;">
 							Login
 						</button>
-						<a class="login100-form-btn" style="width:100%;" id="button_kembali" href="<?php echo $this->config->item('base_domain');?>/sistrabkdsulsel-ver02/">
+						<a class="login100-form-btn" style="width:100%;" href="<?php echo $this->config->item('base_domain');?>/sistrabkdsulsel-ver02/">
 							Kembali
 						</a>
 					</div>
@@ -82,41 +93,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 		</div>
 	</div>
-	
-	<div id="dropDownSelect1"></div>
 
-	<script>      
-	$(document).ready(function(){
-		$("#register").click(function(){
-			var loading = $("#pra_register");
-			var tampilkan = $("#penampil_register");
-			tampilkan.hide();
-			loading.fadeIn(); 
-			$.post('<?php echo site_url('/Frontoffice/frontoffice_register1/tamu');?>',{ data:"okbro"},
-			function(data,status){
-				loading.fadeOut();
-				tampilkan.html(data);
-				tampilkan.fadeIn(2000);
-			});
-		});
 
-		$("#lupa_password").click(function(){
-			var loading = $("#pra_register");
-			var tampilkan = $("#penampil_register");
-			tampilkan.hide();
-			loading.fadeIn(); 
-			$.post('<?php echo site_url('/Frontoffice/lupa_password/tamu');?>',{ data:"okbro"},
-			function(data,status){
-				loading.fadeOut();
-				tampilkan.html(data);
-				tampilkan.fadeIn(2000);
-			});
+<script>      
+$(document).ready(function(){
+	$("#register").click(function(){
+		var loading = $("#pra_register");
+		var tampilkan = $("#penampil_register");
+		tampilkan.hide();
+		loading.fadeIn(); 
+		$.post('<?php echo site_url('/Frontoffice/frontoffice_register1/tamu');?>',{ data:"okbro"},
+		function(data,status){
+			loading.fadeOut();
+			tampilkan.html(data);
+			tampilkan.fadeIn(2000);
 		});
 	});
-	
-	</script>
 
-	
+	$("#lupa_password").click(function(){
+		var loading = $("#pra_register");
+		var tampilkan = $("#penampil_register");
+		tampilkan.hide();
+		loading.fadeIn(); 
+		$.post('<?php echo site_url('/Frontoffice/lupa_password/tamu');?>',{ data:"okbro"},
+		function(data,status){
+			loading.fadeOut();
+			tampilkan.html(data);
+			tampilkan.fadeIn(2000);
+		});
+	});
+});
+
+</script>
 
 <!-- Modal1 -->
 <div class="modal fade" id="myModal" role="dialog">
@@ -143,9 +151,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 	</div>
 </div>
+	
 
-<?php
-
+	<div id="dropDownSelect1"></div>
+	
+<?php 
 if(isset($src_register)){
 	$this->load->library('model_frommyframework');
 	$kolom_rujukan['nama_kolom']='digest_signature_tamu';
@@ -192,8 +202,6 @@ if(isset($pesan_gagal)){
 	alert($pesan_gagal);
 }
 
-?>	
-<?php 
 $error = $this->session->userdata('form_error');
 if ($error)
 {   
@@ -224,10 +232,21 @@ $this->session->unset_userdata('percobaan_login');
 $this->session->unset_userdata('keluar');
 ?>
 <!--===============================================================================================-->
-<script src="<?php echo base_url('/public/asset_login_search/vendor/jquery/jquery-3.2.1.min.js');?>"></script>
-<script src="<?php echo base_url('/public/asset_login_search/js/main.js');?>"></script>
-<script src="<?php echo base_url('/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js');?>"></script>
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/jquery/jquery-3.2.1.min.js');?>"></script>
 <!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/animsition/js/animsition.min.js');?>"></script>
+<!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/js/popper.js');?>"></script>
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/js/bootstrap.min.js');?>"></script>
+<!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/select2/select2.min.js');?>"></script>
+<!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/moment.min.js');?>"></script>
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/daterangepicker.js');?>"></script>
+<!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/vendor/countdowntime/countdowntime.js');?>"></script>
+<!--===============================================================================================-->
+	<script src="<?php echo base_url('/public/asset_login_search/js/main.js');?>"></script>
 
 </body>
 </html>

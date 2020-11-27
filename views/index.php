@@ -25,12 +25,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!-- Nav -->
 			<nav id="nav">
 				<ul class="links">
-					<li><a href="index.html">Home</a></li>
+					<!--<li><a href="index.html">Home</a></li>-->
 					<li><a href="<?php echo site_url('Akuntamupegawai/index'); ?>">Lihat Akun Saya</a></li>
 					<!--<li><a style="cursor:pointer;" id="loginakun" onclick="jQuery.noConflict();$('#myModal1').modal('show');">Lihat Akun Saya</a></li>-->
 					<li><a href="#four">Kirim Pesan ke Admin</a></li>
 					<li><a style="cursor:pointer;" data-toggle="modal" data-target="#myModal" id="register" onclick="jQuery.noConflict();$('#myModal').modal('show');">Register (By Admin)</a></li>
-					<li><a style="cursor:pointer;" id="loginbyadmin" onclick="jQuery.noConflict();$('#myModal1').modal('show');">Login Admin Front Office</a></li>
+					<!--<li><a style="cursor:pointer;" id="loginbyadmin" onclick="jQuery.noConflict();$('#myModal1').modal('show');">Login Admin Front Office</a></li>-->
+					<li><a href="<?php echo site_url('Frontoffice/frontoffice_admin'); ?>">Dashboard Admin</a></li>
 					<li><a href="<?php echo site_url('login/login/logout'); ?>">Logout</a></li>
 				</ul>
 			</nav>
@@ -43,6 +44,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<p>e-Sinra <?php echo $this->config->item('nama_opd');?> Provinsi Sulawesi Selatan</p>
 				<ul class="actions">
 					<li><a href="#" class="button big special" data-toggle="modal" data-target="#myModal" id="unggahberkas">Unggah Berkas</a></li>
+					<li><a href="<?php echo site_url('Frontoffice/frontoffice_admin'); ?>" class="button big special">Dashboard</a></li>
 				</ul>
 			</section>
 
@@ -348,7 +350,7 @@ if(isset($kiriman_enkrip)){
 			<div id='modalku' style='background: #777; position:fixed; left:0;right:0;top:0;bottom:0;z-index:90000; opacity:0.9;'>
 			</div>
 			<div id='panel'  style=''>
-			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src)."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
+			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src)."/".$idsurat_masuk[0]."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
 			<button type=\"button\" class=\"btn btn-info okbro\" style=\"bottom:20px;right:20px; position:absolute;\" onclick='document.getElementById(\"panel\").style.display=\"none\";document.getElementById(\"modalku\").style.display=\"none\";'>Close</button>
 			<button type=\"button\" class=\"btn btn-warning\" style=\"bottom:20px;left:20px; position:absolute;\">Klik >> untuk cetak</button>
 			</div>
@@ -374,6 +376,11 @@ if(isset($kiriman_enkrip)){
 	} 
 
 	if(isset($src_register)){
+		$this->load->library('model_frommyframework');
+		$kolom_rujukan['nama_kolom']='digest_signature_tamu';
+		$kolom_rujukan['nilai']=$signature;
+		$kolom_target='idtamu';
+		$idtamu=$this->model_frommyframework->pembaca_nilai_kolom_tertentu('tamu',$kolom_rujukan,$kolom_target);
 		//if($data_upload[0][0] || $data_upload[1][0]) {
 			//alert('Selamat:\nSurat dan Berkas pendukung sukses diunggah');
 			echo "
@@ -381,7 +388,7 @@ if(isset($kiriman_enkrip)){
 			<div id='modalku' style='background: #777; position:fixed; left:0;right:0;top:0;bottom:0;z-index:90000; opacity:0.9;'>
 			</div>
 			<div id='panel'  style=''>
-			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src_register)."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
+			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src_register)."/".$idtamu[0]."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
 			<button type=\"button\" class=\"btn btn-info okbro\" style=\"bottom:20px;right:20px; position:absolute;\" onclick='document.getElementById(\"panel\").style.display=\"none\";document.getElementById(\"modalku\").style.display=\"none\";'>Close</button>
 			<button type=\"button\" class=\"btn btn-warning\" style=\"bottom:20px;left:20px; position:absolute;\">Klik >> untuk cetak</button>
 			</div>
@@ -405,6 +412,10 @@ if(isset($kiriman_enkrip)){
 			//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
 		//}
 	} 
+
+	if(isset($pesan_gagal)){
+		alert($pesan_gagal);
+	}
 
 ?>
 <div id="status_kirim_log_ke_bankdata"></div>

@@ -94,6 +94,148 @@ class Viewfrommyframework {
     }
     //===========================================END #0002==================================================================================
 
+    //===========================================UNTUK PROFIL ADMIN=========================================================================
+    function penampil_tabel_akun_admin($array_atribut,$query_yang_mau_ditampilkan,$submenu,$kolom_direktori='direktori',$direktori_avatar='/public/img/no-image.jpg',$target_action){
+        $Recordset1=$this->CI->model_frommyframework->user_defined_query_model($query_yang_mau_ditampilkan,$token='andisinra');
+        if (!$Recordset1) {
+            echo "<center>TABEL YANG BERSESUAIAN KOSONG, SILAHKAN DIISI DULU</center>";
+        } else {
+            $Recordset=array();
+            //ambil nama-nama key dari hasil query
+            foreach ($Recordset1 as $isi) {
+                array_push($Recordset,$isi);
+            }
+            
+            unset($Recordset1);
+            $key_query=array_keys($Recordset[0]);
+
+            
+            $tampung_key=array();
+            foreach($key_query as $index_array){
+                if(is_string($index_array)) {
+                    array_push($tampung_key,$index_array);
+                }else {
+
+                }
+            }       
+            
+            //$this->header_lengkap_bootstrap();
+            echo "<div ".$array_atribut[0]." >
+            <table><tr>
+            <td valign=top>";
+            if(in_array($kolom_direktori,$tampung_key)) {
+                $direktori=$isi[$kolom_direktori];
+                if ((!$direktori) or ($direktori=="../../public/img/")){$direktori=$direktori_avatar;}
+                echo "<img src=\"".base_url($direktori)."\" width=\"200px\" height=\"auto\" onmouseover=\"this.style.width='250px';this.style.height='auto';\" onmouseout=\"this.style.width='200px';this.style.height='auto';\" />";
+            } else {
+                echo "<img src=\"".base_url($direktori_avatar)."\" width=\"200px\" height=\"auto\" onmouseover=\"this.style.width='250px';this.style.height='auto';\" onmouseout=\"this.style.width='200px';this.style.height='auto';\" />";
+            }
+            echo "<br><button type='button' id=\"ganti_foto\" data-toggle=\"modal\" data-target=\"#modal_ganti_foto\" style=\"cursor:pointer;color:white;width:200px;margin-top:5px;\" class=\"btn btn-sm btn-success shadow-sm\" ><i class=\"fas fa-image text-white-50\" style=\"color:white\"></i> Ganti Foto</button>
+            ";
+            echo "<br><button type='button' id=\"edit_profil\" style=\"cursor:pointer;color:white;width:200px;margin-top:5px;\" class=\"btn btn-sm btn-success shadow-sm\" ><i class=\"fas fa-user-edit text-white-50\" style=\"color:white\"></i> Edit Profil</button>
+            <script>      
+                $(document).ready(function(){
+                  $(\"#edit_profil\").click(function(){
+                    var loading = $(\"#pra_tabel\");
+                    var tampilkan = $(\"#penampil_tabel\");
+                    tampilkan.hide();
+                    loading.fadeIn(); 
+                    $.post('".site_url('/Frontoffice/edit_profil')."/".$Recordset[0]['idprofil']."',{ data:\"okbro\"},
+                    function(data,status){
+                      loading.fadeOut();
+                      tampilkan.html(data);
+                      tampilkan.fadeIn(2000);
+                    });
+                  });
+                  });
+                </script>
+            ";
+            echo "<br><button type='button' id=\"refresh_ganti_foto\" style=\"cursor:pointer;color:white;width:200px;margin-top:5px;\" class=\"btn btn-sm btn-danger shadow-sm\" ><i class=\"fas fa-sync text-white-50\" style=\"color:white\"></i> Refresh lihat perubahan</button>
+            <script>      
+                $(document).ready(function(){
+                  $(\"#refresh_ganti_foto\").click(function(){
+                    var loading = $(\"#pra_tabel\");
+                    var tampilkan = $(\"#penampil_tabel\");
+                    tampilkan.hide();
+                    loading.fadeIn(); 
+                    $.post('".site_url('/Frontoffice/tampilkan_profil2')."',{ data:\"okbro\"},
+                    function(data,status){
+                      loading.fadeOut();
+                      tampilkan.html(data);
+                      tampilkan.fadeIn(2000);
+                    });
+                  });
+                  });
+                </script>
+            ";
+            echo "<br><button type='button' id=\"balik_dashboard\" style=\"cursor:pointer;color:white;width:200px;margin-top:5px;\" class=\"btn btn-sm btn-primary shadow-sm\" ><i class=\"fas fa-backward text-white-50\" style=\"color:white\"></i> Kembali Dashboard</button>
+            <script>      
+                $(document).ready(function(){
+                  $(\"#balik_dashboard\").click(function(){
+                    var loading = $(\"#pra_tabel\");
+                    var tampilkan = $(\"#penampil_tabel\");
+                    tampilkan.hide();
+                    loading.fadeIn(); 
+                    $.post('".site_url('/Frontoffice/tampilkan_tombol_baca_surat')."',{ data:\"okbro\"},
+                    function(data,status){
+                      loading.fadeOut();
+                      tampilkan.html(data);
+                      tampilkan.fadeIn(2000);
+                    });
+                  });
+                  });
+                </script>
+            ";
+            
+            echo "
+            </td>
+            <td>
+            <table ".$array_atribut[1]." >";
+            foreach($Recordset as $isi){
+                foreach ($tampung_key as $k) {
+                    echo "<tr><td align=right>$k</td><td align=left valign=top>".$isi[$k]."</td></tr>";
+                } 
+            }
+            
+            echo "</table>
+            
+            </td></tr></table></div>";
+
+            echo "
+                <!-- Modal Ganti Foto Profil-->
+                <div class='modal fade' id='modal_ganti_foto' role='dialog' style='z-index:100000;'>
+                    <div class='modal-dialog'>
+                    
+                    <!-- Modal content-->
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                        <h6 class='modal-title'>BKD Provinsi Sulawesi Selatan</h6>
+                        <button type='button' class='close' data-dismiss='modal'>&times;</button>
+                        </div>
+                        <div class='modal-body' >
+                        <center>
+                        <div id='pra_foto_sedang' style='width:65%;' align='center' >
+                        Unggah Foto Baru
+                        <form target='target_ganti_foto' action=\"".$target_action."/".$Recordset[0]['idprofil']."\" method='post' enctype='multipart/form-data'>
+                        <input type='file' name='file_ganti_foto' style=\"width:100%; margin-top:5px;\" class=\"btn btn-warning btn-sm\" id='file_ganti_foto'>
+                        <button type=\"submit\" class=\"btn btn-success btn-sm\" style=\"width:100%; margin-top:5px;\" id=\"submit_ganti_foto\"><i class='fas fa-upload-cloud text-white-100'></i> Unggah</button>
+                        </form> 
+                        <iframe name='target_ganti_foto' id='target_ganti_foto' width='100%' height='0' frameborder=''></iframe>
+                        </center>
+                        <div id=penampil_foto_sedang align='center' style='width:100%;'></div>
+                        </div>
+                        <div class='modal-footer'>
+                        <button type='button' class='btn btn-primary tutup_suara_foto' data-dismiss='modal'>Close</button>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+            ";
+        }
+    }
+    //===========================================UNTUK PROFIL ADMIN=========================================================================
+
     //===========================================TAMBAHAN KHUSUS UNTUK CRUID VERIFIKASI PERBAIKAN===========================================
     function penampil_tabel_no_foto_untuk_surat_masuk_frontoffice_surat_masuk_verifikasi ($kolom_cari,$nama_kolom_direktori_surat,$array_atribut,$query_yang_mau_ditampilkan,$submenu,$kolom_direktori='direktori',$direktori_avatar='/public/img/no-image.jpg'){
         $Recordset1=$this->CI->model_frommyframework->user_defined_query_model($query_yang_mau_ditampilkan,$token='andisinra');
@@ -142,310 +284,312 @@ class Viewfrommyframework {
                 
                 $i=0;
                 foreach($Recordset as $keyisi=>$isi){
-                    echo "<tr>";
-                    //$tampung=array_values($isi); 
-                    $i++;
-                    echo "
-                    <style>
-                    #td$keyisi{
-                        width:120px;
-                    }
-                    </style>
-                    ";
-                    echo "<td valign='top' id='td$keyisi'>";
-                    //$this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_rincian'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Verifikasi',$value_selected_combo='',$submenu='rincian_penampil_tabel',$aksi='rincian',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
-                    echo "
-                    <button style=\"float:left; margin-right:5px;\" class=\"d-sm-inline-block btn btn-sm btn-success shadow-sm kotak\" id=\"eyebuka$keyisi\"><i class='fas fa-check-circle fa-sm text-white-100'></i> Verifikasi</button>
-                    ";
-
-                    /*OLD
-                    echo "
-                    <button data-toggle=\"modal\" data-target=\"#modal_verifikasi\" class=\"btn btn-sm btn-success shadow-sm kotak\" id=\"verifikasi$keyisi\"><i class='fas fa-check-circle fa-sm text-white-100'></i> Verifikasi</button>
-                    ";
-                    */
-                    echo "</td>";
-                    //$this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_rincian'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Verifikasi',$value_selected_combo='',$submenu='rincian_penampil_tabel',$aksi='rincian',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
-                    
-                    /*
-                    echo "<td valign=top>";
-                    $this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_edit'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Edit',$value_selected_combo='',$submenu='edit_penampil_tabel',$aksi='edit',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
-                    echo "</td>";
-                    */
-                    if(in_array($kolom_direktori,$tampung_key)) {
-                        $direktori=$isi[$kolom_direktori];
-                        if ((!$direktori) or ($direktori=="../../public/img/")){$direktori=$direktori_avatar;}
-                        echo "<td valign=top><img src=\"".base_url($direktori)."\" width=\"50px\" height=\"50px\" onmouseover=\"this.style.width='100px';this.style.height='100px';\" onmouseout=\"this.style.width='50px';this.style.height='50px';\" /> </td>";
-                    } 
-                    foreach ($tampung_key as $k) {
-                        $warna_badge='info';
-                        if(in_array($k,$kolom_cari)){
-                            if($k!=='status_surat'){
-                                if($k=='timestamp_masuk'){
-                                    $temporer=explode('-',$isi[$k]);
-                                    echo "<td align=left valign=top>".$temporer[0]."</td>";
-                                } else if(($k=='keterangan')&&(isset($isi['keterangan']))&&($isi['keterangan']!='')) {
-                                    echo "<td align=left valign=top>
-                                    <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\"  style=\"width:100px; height:100%; margin-top:20px; margin-bottom:0px; margin-top:5px;\" id=\"lihat_keterangan$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi\">Lihat Keterangan</button>
-                                    </td>
-                                    <script>
-                                    $(document).ready(function(){
-                                        $(\"#lihat_keterangan$keyisi\").click(function(){
-                                            var loading = $(\"#pra_verifikasi\");
-                                            var tampilkan = $(\"#penampil_verifikasi\");
-                                            //alert('lihat keterangan');
-                                            tampilkan.hide();
-                                            loading.fadeIn(); 
-                                            loading.fadeOut();
-                                            tampilkan.html('<div align=\"left\" style=\"margin-left:20px;\"><h4>Keterangan sebelumnya:</h4><br>".$isi['keterangan']."</div>');
-                                            tampilkan.fadeIn(2000);
-                                            
+                    if($isi['status_surat']!='diteruskan'){
+                        echo "<tr>";
+                        //$tampung=array_values($isi); 
+                        $i++;
+                        echo "
+                        <style>
+                        #td$keyisi{
+                            width:120px;
+                        }
+                        </style>
+                        ";
+                        echo "<td valign='top' id='td$keyisi'>";
+                        //$this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_rincian'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Verifikasi',$value_selected_combo='',$submenu='rincian_penampil_tabel',$aksi='rincian',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
+                        echo "
+                        <button style=\"float:left; margin-right:5px;\" class=\"d-sm-inline-block btn btn-sm btn-success shadow-sm kotak\" id=\"eyebuka$keyisi\"><i class='fas fa-check-circle fa-sm text-white-100'></i> Verifikasi</button>
+                        ";
+    
+                        /*OLD
+                        echo "
+                        <button data-toggle=\"modal\" data-target=\"#modal_verifikasi\" class=\"btn btn-sm btn-success shadow-sm kotak\" id=\"verifikasi$keyisi\"><i class='fas fa-check-circle fa-sm text-white-100'></i> Verifikasi</button>
+                        ";
+                        */
+                        echo "</td>";
+                        //$this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_rincian'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Verifikasi',$value_selected_combo='',$submenu='rincian_penampil_tabel',$aksi='rincian',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
+                        
+                        /*
+                        echo "<td valign=top>";
+                        $this->buat_komponen_form($type='button_ajax_post_CI',$nama_komponen='button_ajax_post_CI'.$isi[$tampung_key[0]],$class='btn btn-success btn-xs',$id='button_ajax_post_CI_edit'.$isi[$tampung_key[0]],$atribut='',$event='',$label='',$value='Edit',$value_selected_combo='',$submenu='edit_penampil_tabel',$aksi='edit',$perekam_id_untuk_button_ajax=NULL,$target_ajax="Frontoffice/gerbang/".$submenu,$data_ajax="{\"".$tampung_key[0]."\":\"".$isi[$tampung_key[0]]."\" }");
+                        echo "</td>";
+                        */
+                        if(in_array($kolom_direktori,$tampung_key)) {
+                            $direktori=$isi[$kolom_direktori];
+                            if ((!$direktori) or ($direktori=="../../public/img/")){$direktori=$direktori_avatar;}
+                            echo "<td valign=top><img src=\"".base_url($direktori)."\" width=\"50px\" height=\"50px\" onmouseover=\"this.style.width='100px';this.style.height='100px';\" onmouseout=\"this.style.width='50px';this.style.height='50px';\" /> </td>";
+                        } 
+                        foreach ($tampung_key as $k) {
+                            $warna_badge='info';
+                            if(in_array($k,$kolom_cari)){
+                                if($k!=='status_surat'){
+                                    if($k=='timestamp_masuk'){
+                                        $temporer=explode('-',$isi[$k]);
+                                        echo "<td align=left valign=top>".$temporer[0]."</td>";
+                                    } else if(($k=='keterangan')&&(isset($isi['keterangan']))&&($isi['keterangan']!='')) {
+                                        echo "<td align=left valign=top>
+                                        <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\"  style=\"width:100px; height:100%; margin-top:20px; margin-bottom:0px; margin-top:5px;\" id=\"lihat_keterangan$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi\">Lihat Keterangan</button>
+                                        </td>
+                                        <script>
+                                        $(document).ready(function(){
+                                            $(\"#lihat_keterangan$keyisi\").click(function(){
+                                                var loading = $(\"#pra_verifikasi\");
+                                                var tampilkan = $(\"#penampil_verifikasi\");
+                                                //alert('lihat keterangan');
+                                                tampilkan.hide();
+                                                loading.fadeIn(); 
+                                                loading.fadeOut();
+                                                tampilkan.html('<div align=\"left\" style=\"margin-left:20px;\"><h4>Keterangan sebelumnya:</h4><br>".$isi['keterangan']."</div>');
+                                                tampilkan.fadeIn(2000);
+                                                
+                                            });
+                                        });
+                                        </script>
+                                        ";
+                                    } else {
+                                        echo "<td align=left valign=top>".$isi[$k]."</td>";
+                                    }
+                                }else{
+                                    /*
+                                    $isi[$k]=='dibaca'?$warna_badge='success':
+                                    $isi[$k]=='ditolak'?$warna_badge='danger':
+                                    $isi[$k]=='dipending'?$warna_badge='warning':
+                                    $isi[$k]=='diteruskan'?$warna_badge='primary':
+                                    */
+                                    if($isi[$k]=='dibaca'){
+                                        $warna_badge='success';
+                                        $time=explode('-',$isi['timestamp_baca']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else if($isi[$k]=='ditolak'){
+                                        $warna_badge='danger';
+                                        $time=explode('-',$isi['timestamp_tolak']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else if($isi[$k]=='dipending'){
+                                        $warna_badge='warning';
+                                        $time=explode('-',$isi['timestamp_dipending']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else if($isi[$k]=='diteruskan'){
+                                        $warna_badge='primary';
+                                        $time=explode('-',$isi['timestamp_diteruskan']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else if($isi[$k]=='selesai'){
+                                        $warna_badge='success';
+                                        $time=explode('-',$isi['timestamp_dikembalikan']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">SELESAI</span>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else if($isi[$k]=='dibalas'){
+                                        $warna_badge='success';
+                                        $time=explode('-',$isi['timestamp_dikembalikan']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">DIBALAS</span>";
+                                        if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    } else {
+                                        $warna_badge='info';
+                                        $time=explode('-',$isi['timestamp_masuk']);
+                                        echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
+                                        if(isset($time[0])&&($time[0]!='')&&($isi[$k]!='masuk')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
+                                        if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
+                                    }
+                                    echo "</td>";
+                                }
+                            }
+                        } 
+                        echo "</tr>";
+                        $size=sizeof($kolom_cari);
+                        echo "<tr id=\"rincian_surat$keyisi\">
+                        <td>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\"  style=\"width:100px; height:100%; margin-top:20px; margin-bottom:0px; margin-top:5px;\" id=\"eyeSlashTutup$keyisi\"><i class='fas fa-eye-slash fa-sm text-white-100'></i> <br>Tutup</button>
+                        </td>
+                        <td colspan=".$size." align='justify'>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-success shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"isiSurat$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-envelope-open fa-sm text-white-100'></i> <br>Buka Surat</button>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:15.5%;margin-top:5px;\" id=\"berkasSurat$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-folder-open fa-sm text-white-100'></i> <br>Berkas Pendukung</button>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-primary shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"teruskan_new$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi\"><i class='fas fa-forward fa-sm text-white-100'></i> <br>Teruskan</button>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-warning shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"pending$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi_sedang\"><i class='fas fa-pause fa-sm text-white-100'></i> <br>Pending</button>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"tolak$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi_sedang\"><i class='fas fa-backward fa-sm text-white-100'></i> <br>Tolak</button>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"detail_surat$keyisi\" ><i class='fas fa-cog fa-sm text-white-100'></i> <br>Detail</button>
+                        <button disabled class=\"d-sm-inline-block btn btn-sm btn-primary shadow-sm kotak\" style=\"width:15.5%;margin-top:5px;\" id=\"unggah_balasan$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-upload fa-sm text-white-100'></i> <br>Unggah Balasan</button>
+                        </td></tr>";
+                        
+                        echo "<tr id=\"rincian_surat_2$keyisi\">";
+                        echo "<td width='100px'>
+                        <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\"  style=\"width:100px;\" id=\"eyeSlashTutup2$keyisi\"><i class='fas fa-eye-slash fa-sm text-white-100'></i> Tutup</button><br>
+                        </td>";
+                        echo "<td colspan=".sizeof($kolom_cari).">
+                        <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:100%;\" id=\"detail_surat2$keyisi\" ><i class='fas fa-eye fa-sm text-white-100'></i> Lihat Rincian Surat</button>
+                        <center>
+                        <div id='pra_rincian$keyisi' style='width:65%;' align='center' >
+                        Mohon ditunggu...<br>
+                        <i class='fa-3x fas fa-spinner fa-pulse' ".$this->CI->config->item('style_progres_bulat_admin')."></i>
+                        </center>
+                        </div>
+                        <div id=penampil_rincian$keyisi style='text-align:left;width:100%;overflow:auto;'></div>
+                        ";
+                        echo "</td>";
+                        //echo "<td ></td>";
+                        echo "</tr>";
+                        
+                        echo "
+                            <style>
+                                #rincian_surat$keyisi{
+                                    display:none;
+                                }
+                                #rincian_surat_2$keyisi{
+                                    display:none;
+                                }
+                                #pra_rincian$keyisi{
+                                    display:none;
+                                }
+                                @media screen and (max-width: 480px) {
+                                    #verifikasi$keyisi{
+                                        width:100%;
+                                    }
+                                    #eyebuka$keyisi{
+                                        width:100%;
+                                        margin-bottom:5px;
+                                    }
+                                }
+                            </style>
+                        ";
+                        $direktori_surat=$this->CI->enkripsi->strToHex($this->CI->enkripsi->enkripSimetri_data($isi[$nama_kolom_direktori_surat['surat']]));
+                        $direktori_berkas=$this->CI->enkripsi->strToHex($this->CI->enkripsi->enkripSimetri_data($isi[$nama_kolom_direktori_surat['berkas']]));
+                        $surat=explode('.',$isi[$nama_kolom_direktori_surat['surat']]);
+                        $berkas=explode('.',$isi[$nama_kolom_direktori_surat['berkas']]);
+                        echo "
+                        <script>
+                        $(document).ready(function(){
+                            $(\"#teruskan_new$keyisi\").click(function(){
+                                var loading = $(\"#pra_verifikasi\");
+                                var tampilkan = $(\"#penampil_verifikasi\");
+                                tampilkan.hide();
+                                loading.html('Persiapan pengiriman dengan memuat data ke memori...loading..<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->CI->config->item('style_progres_bulat_admin')."></i>');
+                                loading.fadeIn(); 
+                                $.post('".site_url('/Frontoffice/verifikasi_new')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                });
+                            });
+    
+                            $(\"#pending$keyisi\").click(function(){
+                                var loading = $(\"#pra_verifikasi_sedang\");
+                                var tampilkan = $(\"#penampil_verifikasi_sedang\");
+                                tampilkan.hide();
+                                loading.fadeIn(); 
+                                $.post('".site_url('/Frontoffice/pending')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                });
+                            });
+    
+                            $(\"#tolak$keyisi\").click(function(){
+                                var loading = $(\"#pra_verifikasi_sedang\");
+                                var tampilkan = $(\"#penampil_verifikasi_sedang\");
+                                tampilkan.hide();
+                                loading.fadeIn(); 
+                                $.post('".site_url('/Frontoffice/tolak')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                });
+                            });
+    
+                            $(\"#detail_surat2$keyisi\").click(function(){
+                                var loading = $(\"#pra_rincian$keyisi\");
+                                var tampilkan = $(\"#penampil_rincian$keyisi\");
+                                tampilkan.hide();
+                                loading.fadeIn(); 
+                                $.post('".site_url('/Frontoffice/tampilkan_rincian_surat_frontoffice')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                });
+                            });
+                            
+                            $(\"#eyebuka$keyisi\").click(function(){
+                                $('#rincian_surat$keyisi').toggle(1000);
+                                $('#rincian_surat_2$keyisi').hide(1000);
+                                $('#penampil_rincian$keyisi').html('');
+                            });
+                            $(\"#detail_surat$keyisi\").click(function(){
+                                $('#rincian_surat_2$keyisi').toggle(1000);
+                                $('#penampil_rincian$keyisi').html('');
+                            });
+                            $(\"#eyeSlashTutup$keyisi\").click(function(){
+                                $('#rincian_surat$keyisi').fadeOut(1000);
+                                $('#rincian_surat_2$keyisi').hide(1000);
+                            });
+                            $(\"#eyeSlashTutup2$keyisi\").click(function(){
+                                $('#rincian_surat_2$keyisi').hide(1000);
+                                $('#penampil_rincian$keyisi').html('');
+                            });
+                            $(\"#isiSurat$keyisi\").click(function(){
+                                var loading = $(\"#pra_baca_surat_new\");
+                                var tampilkan = $(\"#penampil_baca_surat_new\");
+                                var loading1 = $(\"#pra_baca_surat_new1\");
+                                var tampilkan1 = $(\"#penampil_baca_surat_new1\");
+                                tampilkan.hide();
+                                loading.fadeIn(); 
+                                $.post('".site_url('Frontoffice/tesopenpdf/'.$direktori_surat)."',{ data:\"okbro\"},
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                    $.post('".site_url('/Frontoffice/proses_baca')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
+                                    function(data_baca,status){
+                                        //BAGIAN MENCATAT LOG KE BANKDATA
+                                        $.post('".$this->CI->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_baca,{ data:data_baca},
+                                        function(data_log,status_log){
                                         });
                                     });
-                                    </script>
+    
+                                    //Bagian membaca di modal yang besar
+                                    loading1.fadeOut();
                                     ";
-                                } else {
-                                    echo "<td align=left valign=top>".$isi[$k]."</td>";
-                                }
-                            }else{
-                                /*
-                                $isi[$k]=='dibaca'?$warna_badge='success':
-                                $isi[$k]=='ditolak'?$warna_badge='danger':
-                                $isi[$k]=='dipending'?$warna_badge='warning':
-                                $isi[$k]=='diteruskan'?$warna_badge='primary':
-                                */
-                                if($isi[$k]=='dibaca'){
-                                    $warna_badge='success';
-                                    $time=explode('-',$isi['timestamp_baca']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span><br>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else if($isi[$k]=='ditolak'){
-                                    $warna_badge='danger';
-                                    $time=explode('-',$isi['timestamp_tolak']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else if($isi[$k]=='dipending'){
-                                    $warna_badge='warning';
-                                    $time=explode('-',$isi['timestamp_dipending']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else if($isi[$k]=='diteruskan'){
-                                    $warna_badge='primary';
-                                    $time=explode('-',$isi['timestamp_diteruskan']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else if($isi[$k]=='selesai'){
-                                    $warna_badge='success';
-                                    $time=explode('-',$isi['timestamp_dikembalikan']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">SELESAI</span>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else if($isi[$k]=='dibalas'){
-                                    $warna_badge='success';
-                                    $time=explode('-',$isi['timestamp_dikembalikan']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">DIBALAS</span>";
-                                    if(isset($time[0])&&($time[0]!='')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                } else {
-                                    $warna_badge='info';
-                                    $time=explode('-',$isi['timestamp_masuk']);
-                                    echo "<td align=left valign=top><span class=\"badge badge-$warna_badge\">".$isi[$k]."</span>";
-                                    if(isset($time[0])&&($time[0]!='')&&($isi[$k]!='masuk')) echo "<span class=\"badge badge-$warna_badge\">Tgl: ".$time[0]."</span>";
-                                    if(isset($time[1]))echo "<br><span class=\"badge badge-$warna_badge\">Jam: ".$time[1]."</span>";
-                                }
-                                echo "</td>";
-                            }
-                        }
-                    } 
-                    echo "</tr>";
-                    $size=sizeof($kolom_cari);
-                    echo "<tr id=\"rincian_surat$keyisi\">
-                    <td>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\"  style=\"width:100px; height:100%; margin-top:20px; margin-bottom:0px; margin-top:5px;\" id=\"eyeSlashTutup$keyisi\"><i class='fas fa-eye-slash fa-sm text-white-100'></i> <br>Tutup</button>
-                    </td>
-                    <td colspan=".$size." align='justify'>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-success shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"isiSurat$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-envelope-open fa-sm text-white-100'></i> <br>Buka Surat</button>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:15.5%;margin-top:5px;\" id=\"berkasSurat$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-folder-open fa-sm text-white-100'></i> <br>Berkas Pendukung</button>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-primary shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"teruskan_new$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi\"><i class='fas fa-forward fa-sm text-white-100'></i> <br>Teruskan</button>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-warning shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"pending$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi_sedang\"><i class='fas fa-pause fa-sm text-white-100'></i> <br>Pending</button>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"tolak$keyisi\" data-toggle=\"modal\" data-target=\"#modal_verifikasi_sedang\"><i class='fas fa-backward fa-sm text-white-100'></i> <br>Tolak</button>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:13%;margin-top:5px;\" id=\"detail_surat$keyisi\" ><i class='fas fa-cog fa-sm text-white-100'></i> <br>Detail</button>
-                    <button disabled class=\"d-sm-inline-block btn btn-sm btn-primary shadow-sm kotak\" style=\"width:15.5%;margin-top:5px;\" id=\"unggah_balasan$keyisi\" data-toggle=\"modal\" data-target=\"#modal_baca_surat_new\"><i class='fas fa-upload fa-sm text-white-100'></i> <br>Unggah Balasan</button>
-                    </td></tr>";
-                    
-                    echo "<tr id=\"rincian_surat_2$keyisi\">";
-                    echo "<td width='100px'>
-                    <button class=\"d-sm-inline-block btn btn-sm btn-danger shadow-sm kotak\"  style=\"width:100px;\" id=\"eyeSlashTutup2$keyisi\"><i class='fas fa-eye-slash fa-sm text-white-100'></i> Tutup</button><br>
-                    </td>";
-                    echo "<td colspan=".sizeof($kolom_cari).">
-                    <button class=\"d-sm-inline-block btn btn-sm btn-info shadow-sm kotak\" style=\"width:100%;\" id=\"detail_surat2$keyisi\" ><i class='fas fa-eye fa-sm text-white-100'></i> Lihat Rincian Surat</button>
-                    <center>
-                    <div id='pra_rincian$keyisi' style='width:65%;' align='center' >
-                    Mohon ditunggu...<br>
-                    <i class='fa-3x fas fa-spinner fa-pulse' ".$this->CI->config->item('style_progres_bulat_admin')."></i>
-                    </center>
-                    </div>
-                    <div id=penampil_rincian$keyisi style='text-align:left;width:100%;overflow:auto;'></div>
-                    ";
-                    echo "</td>";
-                    //echo "<td ></td>";
-                    echo "</tr>";
-                    
-                    echo "
-                        <style>
-                            #rincian_surat$keyisi{
-                                display:none;
-                            }
-                            #rincian_surat_2$keyisi{
-                                display:none;
-                            }
-                            #pra_rincian$keyisi{
-                                display:none;
-                            }
-                            @media screen and (max-width: 480px) {
-                                #verifikasi$keyisi{
-                                    width:100%;
-                                }
-                                #eyebuka$keyisi{
-                                    width:100%;
-                                    margin-bottom:5px;
-                                }
-                            }
-                        </style>
-                    ";
-                    $direktori_surat=$this->CI->enkripsi->strToHex($this->CI->enkripsi->enkripSimetri_data($isi[$nama_kolom_direktori_surat['surat']]));
-                    $direktori_berkas=$this->CI->enkripsi->strToHex($this->CI->enkripsi->enkripSimetri_data($isi[$nama_kolom_direktori_surat['berkas']]));
-                    $surat=explode('.',$isi[$nama_kolom_direktori_surat['surat']]);
-                    $berkas=explode('.',$isi[$nama_kolom_direktori_surat['berkas']]);
-                    echo "
-                    <script>
-					$(document).ready(function(){
-                        $(\"#teruskan_new$keyisi\").click(function(){
-                            var loading = $(\"#pra_verifikasi\");
-                            var tampilkan = $(\"#penampil_verifikasi\");
-                            tampilkan.hide();
-							loading.html('Persiapan pengiriman dengan memuat data ke memori...loading..<br><i class=\"fa-3x fas fa-spinner fa-pulse\" ".$this->CI->config->item('style_progres_bulat_admin')."></i>');
-                            loading.fadeIn(); 
-                            $.post('".site_url('/Frontoffice/verifikasi_new')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
-                            function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
+                                    if($surat[sizeof($surat)-1]=='pdf'||$surat[sizeof($surat)-1]=='png'||$surat[sizeof($surat)-1]=='jpg'||$surat[sizeof($surat)-1]=='html'||$surat[sizeof($surat)-1]=='htm'||$surat[sizeof($surat)-1]=='bmp'||$surat[sizeof($surat)-1]=='gif'||$surat[sizeof($surat)-1]=='mp4'||$surat[sizeof($surat)-1]=='mp3'||$surat[sizeof($surat)-1]=='vid'||$surat[sizeof($surat)-1]=='wav') echo "tampilkan1.html(data);";
+                        echo "		});
                             });
-                        });
-
-                        $(\"#pending$keyisi\").click(function(){
-                            var loading = $(\"#pra_verifikasi_sedang\");
-                            var tampilkan = $(\"#penampil_verifikasi_sedang\");
-                            tampilkan.hide();
-                            loading.fadeIn(); 
-                            $.post('".site_url('/Frontoffice/pending')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
-                            function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
+                            ";
+    
+                        echo "
+                            $(\"#berkasSurat$keyisi\").click(function(){
+                                var loading = $(\"#pra_baca_surat_new\");
+                                var tampilkan = $(\"#penampil_baca_surat_new\");
+                                var loading1 = $(\"#pra_baca_surat_new1\");
+                                var tampilkan1 = $(\"#penampil_baca_surat_new1\");
+                                tampilkan.hide();
+                                loading.fadeIn(); 
+                                $.post('".site_url('Frontoffice/tesopenpdf/'.$direktori_berkas)."',{ data:\"okbro\"},
+                                function(data,status){
+                                    loading.fadeOut();
+                                    tampilkan.html(data);
+                                    tampilkan.fadeIn(2000);
+                                    loading1.fadeOut();
+                                    ";
+                                    if($berkas[sizeof($berkas)-1]=='pdf'||$berkas[sizeof($berkas)-1]=='png'||$berkas[sizeof($berkas)-1]=='jpg'||$berkas[sizeof($berkas)-1]=='html'||$berkas[sizeof($berkas)-1]=='htm'||$berkas[sizeof($berkas)-1]=='bmp'||$berkas[sizeof($berkas)-1]=='gif'||$berkas[sizeof($berkas)-1]=='mp4'||$berkas[sizeof($berkas)-1]=='mp3'||$berkas[sizeof($berkas)-1]=='vid'||$berkas[sizeof($berkas)-1]=='wav') echo "            tampilkan1.html(data);";
+                        echo "		});
                             });
-                        });
-
-                        $(\"#tolak$keyisi\").click(function(){
-                            var loading = $(\"#pra_verifikasi_sedang\");
-                            var tampilkan = $(\"#penampil_verifikasi_sedang\");
-                            tampilkan.hide();
-                            loading.fadeIn(); 
-                            $.post('".site_url('/Frontoffice/tolak')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
-                            function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
+                            
+                                                    
                             });
-                        });
-
-                        $(\"#detail_surat2$keyisi\").click(function(){
-                            var loading = $(\"#pra_rincian$keyisi\");
-                            var tampilkan = $(\"#penampil_rincian$keyisi\");
-                            tampilkan.hide();
-                            loading.fadeIn(); 
-                            $.post('".site_url('/Frontoffice/tampilkan_rincian_surat_frontoffice')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
-                            function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
-                            });
-                        });
-                        
-						$(\"#eyebuka$keyisi\").click(function(){
-							$('#rincian_surat$keyisi').toggle(1000);
-							$('#rincian_surat_2$keyisi').hide(1000);
-							$('#penampil_rincian$keyisi').html('');
-						});
-						$(\"#detail_surat$keyisi\").click(function(){
-							$('#rincian_surat_2$keyisi').toggle(1000);
-							$('#penampil_rincian$keyisi').html('');
-						});
-						$(\"#eyeSlashTutup$keyisi\").click(function(){
-							$('#rincian_surat$keyisi').fadeOut(1000);
-							$('#rincian_surat_2$keyisi').hide(1000);
-                        });
-						$(\"#eyeSlashTutup2$keyisi\").click(function(){
-							$('#rincian_surat_2$keyisi').hide(1000);
-							$('#penampil_rincian$keyisi').html('');
-                        });
-                        $(\"#isiSurat$keyisi\").click(function(){
-							var loading = $(\"#pra_baca_surat_new\");
-							var tampilkan = $(\"#penampil_baca_surat_new\");
-							var loading1 = $(\"#pra_baca_surat_new1\");
-							var tampilkan1 = $(\"#penampil_baca_surat_new1\");
-							tampilkan.hide();
-							loading.fadeIn(); 
-                            $.post('".site_url('Frontoffice/tesopenpdf/'.$direktori_surat)."',{ data:\"okbro\"},
-							function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
-                                $.post('".site_url('/Frontoffice/proses_baca')."',{key:\"".$tampung_key[0]."\",data:\"".$isi[$tampung_key[0]]."\" },
-                                function(data_baca,status){
-                                    //BAGIAN MENCATAT LOG KE BANKDATA
-                                    $.post('".$this->CI->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data_baca,{ data:data_baca},
-                                    function(data_log,status_log){
-                                    });
-                                });
-
-                                //Bagian membaca di modal yang besar
-                                loading1.fadeOut();
-                                ";
-                                if($surat[sizeof($surat)-1]=='pdf'||$surat[sizeof($surat)-1]=='png'||$surat[sizeof($surat)-1]=='jpg'||$surat[sizeof($surat)-1]=='html'||$surat[sizeof($surat)-1]=='htm'||$surat[sizeof($surat)-1]=='bmp'||$surat[sizeof($surat)-1]=='gif'||$surat[sizeof($surat)-1]=='mp4'||$surat[sizeof($surat)-1]=='mp3'||$surat[sizeof($surat)-1]=='vid'||$surat[sizeof($surat)-1]=='wav') echo "tampilkan1.html(data);";
-					echo "		});
-                        });
+                        </script>
                         ";
+                    }
 
-                    echo "
-                        $(\"#berkasSurat$keyisi\").click(function(){
-							var loading = $(\"#pra_baca_surat_new\");
-							var tampilkan = $(\"#penampil_baca_surat_new\");
-							var loading1 = $(\"#pra_baca_surat_new1\");
-							var tampilkan1 = $(\"#penampil_baca_surat_new1\");
-							tampilkan.hide();
-							loading.fadeIn(); 
-                            $.post('".site_url('Frontoffice/tesopenpdf/'.$direktori_berkas)."',{ data:\"okbro\"},
-							function(data,status){
-                                loading.fadeOut();
-                                tampilkan.html(data);
-                                tampilkan.fadeIn(2000);
-                                loading1.fadeOut();
-                                ";
-                                if($berkas[sizeof($berkas)-1]=='pdf'||$berkas[sizeof($berkas)-1]=='png'||$berkas[sizeof($berkas)-1]=='jpg'||$berkas[sizeof($berkas)-1]=='html'||$berkas[sizeof($berkas)-1]=='htm'||$berkas[sizeof($berkas)-1]=='bmp'||$berkas[sizeof($berkas)-1]=='gif'||$berkas[sizeof($berkas)-1]=='mp4'||$berkas[sizeof($berkas)-1]=='mp3'||$berkas[sizeof($berkas)-1]=='vid'||$berkas[sizeof($berkas)-1]=='wav') echo "            tampilkan1.html(data);";
-                    echo "		});
-                        });
-                        
-                                                
-						});
-					</script>
-                    ";
-
-                }
+                }//abdullah
                 
                 echo "</table></div>";
                 echo "
@@ -6040,6 +6184,7 @@ class Viewfrommyframework {
             foreach ($Recordset1 as $isi) {
                 array_push($Recordset,$isi);
             }
+            //print_r($Recordset);
             
             unset($Recordset1);
             $key_query=array_keys($Recordset[0]);
@@ -6071,7 +6216,10 @@ class Viewfrommyframework {
             <table ".$array_atribut[1]." >";
             foreach($Recordset as $isi){
                 foreach ($tampung_key as $k) {
-                    echo "<tr><td align=right>$k</td><td align=left valign=top>".$isi[$k]."</td></tr>";
+                    if($k=='cookie'||$k=='timestamp_daftar'||$k=='pass_sampai_tgl'||$k=='pass_berlaku_mulai'||$k=='direktori_foto'){
+                    }else{
+                        echo "<tr><td align=right>".ucwords(implode(' ',explode('_',$k)))."</td><td align=left valign=top>".$isi[$k]."</td></tr>";
+                    }
                 } 
             }
             
@@ -6119,7 +6267,11 @@ class Viewfrommyframework {
             <table ".$array_atribut[1]." >";
             foreach($Recordset as $key=>$isi){
                 if(is_string($key)) {
-                    echo "<tr><td align=right>$key</td><td align=left valign=top>".$isi."</td></tr>";
+                    if($key=='cookie'||$key=='timestamp_daftar'||$key=='pass_sampai_tanggal'||$key=='pass_berlaku_mulai'||$key=='direktori_foto'){
+                    }else{
+                        echo "<tr><td align=right>".ucwords(implode(' ',explode('_',$key)))."</td><td align=left valign=top>".$isi."</td></tr>";
+                    }
+                    //OLD echo "<tr><td align=right>$key</td><td align=left valign=top>".$isi."</td></tr>";
                 } 
             }
             

@@ -13,7 +13,7 @@ class Logintamupegawai_search extends MY_Controller {
 	public function index()
 	{
 		//cek session, jika ada langsung arahkan ke target
-		$user = $this->session->userdata('user_frontoffice_unggah_surat_tamu');
+		$user = $this->session->userdata('user_frontoffice_tamupegawai');
         $str = $user['email'].$user['idtamu']."1@@@@@!andisinra";
         $str = hash("sha256", $str );
         $hash=$this->session->userdata('hash');
@@ -23,7 +23,7 @@ class Logintamupegawai_search extends MY_Controller {
 		} 
 		
 		//cek cookie, jika ada langsung arahkan ke agamas
-		$cookie_user=get_cookie('munirah_muslim');
+		$cookie_user=get_cookie('munirah_muslim_tamupegawai');
 		$cookie_tersimpan = $this->Muser->get_by_cookie($cookie_user)->row();
 
 		//$cookietersimpan = $cookie_tersimpan->cookie;
@@ -73,15 +73,17 @@ class Logintamupegawai_search extends MY_Controller {
 			//print_r($check);
 			if(($check != false) && (password_verify($this->_post('password'),$check->password))){
 				$user = array (
-				'email' => $check->email,
-				'idtamu' => $check->idtamu
-				);
+					'idtamu' => $check->idtamu,
+					'email' => $check->email,
+					'username' => $check->username,
+					'nama_tamu' => $check->nama_tamu
+					);
 
 
 				$str = $check->email.$check->idtamu."1@@@@@!andisinra";
 				$str = hash("sha256", $str );
 				$this->session->set_userdata('hash',$str);
-				$this->session->set_userdata('user_frontoffice_unggah_surat_tamu',$user);
+				$this->session->set_userdata('user_frontoffice_tamupegawai',$user);
 
 				
 				//$this->session->set_userdata('idtamu_login',$user['idtamu']);
@@ -110,7 +112,7 @@ class Logintamupegawai_search extends MY_Controller {
 						'idtamu' => $user['idtamu']
 					);
 					
-					set_cookie('munirah_muslim_tamu_unggah_surat',$str_cookie,3600*24);
+					set_cookie('munirah_muslim_tamupegawai',$str_cookie,3600*24);
 					$this->Muser->update_cookie($data_cookie);
 				} 
 				//KALAU MAU MENGETES KODE MENGGUNAKAN ECHO, MATIKAN DULU SEMUA FUNGSI redirect() KARENA INI MENUTUP HASILNYA;
@@ -206,7 +208,7 @@ class Logintamupegawai_search extends MY_Controller {
 			$this->session->set_userdata('form_error', 'error');
 			//echo "OK BRO";
 			//$this->load->view('Frontoffice/index');
-			redirect(site_url('Frontoffice/halaman_login_search_internal')); 
+			redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu_pegawai'));
 			
 		}
 		else
@@ -251,7 +253,7 @@ class Logintamupegawai_search extends MY_Controller {
 						'username' => $user['username']
 					);
 					
-					set_cookie('munirah_muslim',$str_cookie,3600*24);
+					set_cookie('munirah_muslim_pegawai',$str_cookie,3600*24);
 					$this->Muser->update_cookie($data_cookie);
 				} 
 				//echo "OK BRO";
@@ -259,7 +261,7 @@ class Logintamupegawai_search extends MY_Controller {
 			}
 			*/
 			$this->session->set_userdata('login_salah', 'salah');
-			redirect(site_url('Frontoffice/halaman_login_search_internal'));
+			redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu_pegawai'));
 		}
 		
 	} 
@@ -271,6 +273,8 @@ class Logintamupegawai_search extends MY_Controller {
 			//echo "OK BRO PASSWORD BENAR";
 			$user = array (
 				'email' => $kiriman['nipbaru'][0]['email'],
+				'nipbaru' => $kiriman['nipbaru'][0]['nipbaru'],
+				'nama' => $kiriman['nipbaru'][0]['nama'],
 				'username' => $kiriman['nipbaru'][0]['username']
 				);
 			
@@ -279,21 +283,22 @@ class Logintamupegawai_search extends MY_Controller {
 			$this->session->set_userdata('hash',$str);
 			$this->session->set_userdata('user_frontoffice_pegawai',$user);
 
-			redirect(site_url('Frontoffice/search_page_internal'));
+			redirect(site_url('Frontoffice/halaman_unggah_surat_pegawai_lewat_akun'));
 			//OLD
 			//redirect( site_url('Akuntamupegawai/index_dashboard_pegawai/'.$data) );
 
 		}else{
 			//alert("Password tidak cocok");
-			$this->load->view('search_page/loginpagesearch_internal');
+			//$this->load->view('search_page/loginpagesearch_internal');
+			redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu_pegawai'));
 		}
 	}
 
 	public function logout()
 		{
-			$this->session->unset_userdata('user_frontoffice_unggah_surat_tamu');
+			$this->session->unset_userdata('user_frontoffice_tamupegawai');
 			$this->session->set_userdata('keluar', 'keluar');
-			delete_cookie('munirah_muslim_tamu_search_bkd');
+			delete_cookie('munirah_muslim_tamupegawai');
 			redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu'));
 		}
 	
@@ -301,8 +306,8 @@ class Logintamupegawai_search extends MY_Controller {
 	{
 		$this->session->unset_userdata('user_frontoffice_pegawai');
 		$this->session->set_userdata('keluar', 'keluar');
-		delete_cookie('munirah_muslim_tamu_unggah_surat');
-		redirect(site_url('Frontoffice/halaman_login_search_internal'));
+		//delete_cookie('munirah_muslim_pegawai');
+		redirect(site_url('Frontoffice/halaman_login_unggah_surat_tamu_pegawai'));
 	}
 
 }

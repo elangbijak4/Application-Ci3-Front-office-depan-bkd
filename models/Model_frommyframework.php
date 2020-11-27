@@ -14,6 +14,12 @@ class Model_frommyframework extends CI_Model
     }
 
     //===========================================#0002======================================================================================
+    public function pembaca_nilai_kolom_tertentu_like($table,$kolom_rujukan){
+        $this->db->like($kolom_rujukan['nama_kolom'], $kolom_rujukan['nilai']);
+        $query = $this->db->get($table);
+        return $query;
+    }
+    
     public function akses_opd_table_opd(){ 
 		$query=$this->select_distinct_kolom_tertentu('table_opd','opd');
 		return $query;

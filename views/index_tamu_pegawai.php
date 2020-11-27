@@ -26,10 +26,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<nav id="nav">
 				<ul class="links">
 					<!--<li><a href="index.html">Home</a></li>-->
-					<li><a href="<?php echo site_url('Akuntamupegawai/index_dashboard'); ?>">Lihat Akun Saya</a></li>
+					<li><a href="<?php echo site_url('Akuntamupegawai/index_dashboard_pegawai'); ?>">Lihat Akun Saya</a></li>
 					<!--<li><a style="cursor:pointer;" id="loginakun" onclick="jQuery.noConflict();$('#myModal1').modal('show');">Lihat Akun Saya</a></li>-->
 					<li><a href="#four">Kirim Pesan ke Admin</a></li>
-					<li><a href="<?php echo site_url('login_unggah_surat_tamu/Logintamupegawai_search/logout'); ?>">Logout</a></li>
+					<li><a href="<?php echo site_url('login_unggah_surat_tamu/Logintamupegawai_search/logout_pegawai'); ?>">Logout</a></li>
 				</ul>
 			</nav>
 
@@ -305,68 +305,7 @@ if ( window.history.replaceState ) {
 }
 </script>
 
-
-<?php
-
-if(isset($src_register)){
-	$this->load->library('model_frommyframework');
-	$kolom_rujukan['nama_kolom']='digest_signature_tamu';
-	$kolom_rujukan['nilai']=$signature;
-	$kolom_target='idtamu';
-	$data_rekord_tamu=$this->model_frommyframework->pembaca_nilai_baris_tertentu('tamu',$kolom_rujukan,$kolom_target);
-	alert('Anda Sekarang telah memiliki akun, dan sekarang telah berada di dalam akun ini untuk menggunggah surat. Anda bisa mengklik menu \"Lihat Akun Saya\" di menu kanan untuk memulai mengelola akun anda, jangan lupa Logout jika telah selesai. \nSetelah mengklik tombol ok jendela ini, tunggu sejenak, anda diberikan nota pdf. Simpanlah baik-baik bukti nota registrasi anda karena login berikutnya menggunakan informasi ID Tamu dan password yang diberikan pada nota pdf anda.');
-	$buffer=NULL;
-			foreach($data_rekord_tamu->result() as $row){
-				$buffer=$row;
-			}
-	$user_frontoffice_tamupegawai = array (
-		'idtamu' => $buffer->idtamu,
-		'email' => $buffer->email,
-		'username' => $buffer->username,
-		'nama_tamu' => $buffer->nama_tamu
-		);
-	
-	$this->session->set_userdata('user_frontoffice_tamupegawai',$user_frontoffice_tamupegawai);
-	#echo "INI src_register: ".$src_register;
-	#echo "<br>INI signature: ".$signature;
-	#echo "<br>INI idtamu: ".$idtamu[0];
-
-	//if($data_upload[0][0] || $data_upload[1][0]) {
-		//alert('Selamat:\nSurat dan Berkas pendukung sukses diunggah');
-		echo "
-		<!--layer untuk modalku-->
-		<div id='modalku' style='background: #777; position:fixed; left:0;right:0;top:0;bottom:0;z-index:90000; opacity:0.9;'>
-		</div>
-		<div id='panel'  style=''>
-		<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src_register)."/".$user_frontoffice_tamupegawai['idtamu']."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
-		<button type=\"button\" class=\"btn btn-info okbro\" style=\"bottom:20px;right:20px; position:absolute;\" onclick='document.getElementById(\"panel\").style.display=\"none\";document.getElementById(\"modalku\").style.display=\"none\";'>Close</button>
-		<button type=\"button\" class=\"btn btn-warning\" style=\"bottom:20px;left:20px; position:absolute;\">Klik >> untuk cetak</button>
-		</div>
-		
-		<style>
-		#panel {
-			border-radius: 10px; background: #fff; position:fixed; left:30%;right:30%;top:20%;bottom:20%;z-index:90001;
-		}
-		@media screen and (max-width: 480px) {
-		#panel {
-			left:5%;
-			right:5%;
-		}
-		.okbro{
-			width:60px;
-		}
-		}
-		</style>
-		";
-	//} else {
-		//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
-	//}
-}
-
-if(isset($pesan_gagal)){
-	alert($pesan_gagal);
-}
-
+<?php 
 if(isset($kiriman_enkrip)){
 	$this->load->library('model_frommyframework');
 	$this->load->library('enkripsi');
@@ -431,7 +370,7 @@ if(isset($kiriman_enkrip)){
 			alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
 		}
 	} 
-/*
+
 	if(isset($src_register)){
 		//if($data_upload[0][0] || $data_upload[1][0]) {
 			//alert('Selamat:\nSurat dan Berkas pendukung sukses diunggah');
@@ -464,7 +403,7 @@ if(isset($kiriman_enkrip)){
 			//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
 		//}
 	} 
-*/
+
 ?>
 <div id="status_kirim_log_ke_bankdata"></div>
 	</body>

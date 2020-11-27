@@ -13,8 +13,8 @@ class Logintamupegawai extends MY_Controller {
 	public function index()
 	{
 		//cek session, jika ada langsung arahkan ke agamas
-		$user = $this->session->userdata('user_frontoffice');
-        $str = $user['email'].$user['username']."1@@@@@!andisinra";
+		$user = $this->session->userdata('user_frontoffice_tamupegawai');
+        $str = $user['email'].$user['username']."1@@@@@!andisinra";//hati2 disini
         $str = hash("sha256", $str );
         $hash=$this->session->userdata('hash');
         if (($user!==FALSE)&&($str==$hash))
@@ -23,7 +23,7 @@ class Logintamupegawai extends MY_Controller {
 		} 
 		
 		//cek cookie, jika ada langsung arahkan ke agamas
-		$cookie_user=get_cookie('munirah_muslim');
+		$cookie_user=get_cookie('munirah_muslim_tamupegawai');
 		$cookie_tersimpan = $this->Muser->get_by_cookie($cookie_user)->row();
 
 		//$cookietersimpan = $cookie_tersimpan->cookie;
@@ -45,9 +45,9 @@ class Logintamupegawai extends MY_Controller {
 	{
 		//terima kiriman data dari halaman login
 		$data = array(
-			'username' => $this->_post('username')
+			'idtamu' => $this->_post('idtamu')
 		);
-		$this->form_validation->set_rules('username', 'Username', 'required'); 
+		$this->form_validation->set_rules('idtamu', 'idtamu', 'required'); 
 		$this->form_validation->set_rules('password', 'Password', 'required'); 
 
 		if ($this->form_validation->run() == FALSE)
@@ -68,13 +68,14 @@ class Logintamupegawai extends MY_Controller {
 				$user = array (
 				'idtamu' => $check->idtamu,
 				'email' => $check->email,
-				'username' => $check->username
+				'username' => $check->username,
+				'nama_tamu' => $check->nama_tamu
 				);
 			
 				$str = $check->email.$check->username."1@@@@@!andisinra";
 				$str = hash("sha256", $str );
 				$this->session->set_userdata('hash',$str);
-				$this->session->set_userdata('user_frontoffice',$user);
+				$this->session->set_userdata('user_frontoffice_tamupegawai',$user);
 
 				//pembuatan cookie:
 				$ok_cookie=$this->_post('remember_me');
@@ -93,10 +94,10 @@ class Logintamupegawai extends MY_Controller {
 					$str_cookie = hash("sha256", $str_cookie );
 					$data_cookie = array(
 						'cookie' => $str_cookie,
-						'username' => $user['username']
+						'idtamu' => $user['idtamu']
 					);
 					
-					set_cookie('munirah_muslim',$str_cookie,3600*24);
+					set_cookie('munirah_muslim_tamupegawai',$str_cookie,3600*24);
 					$this->Muser->update_cookie($data_cookie);
 				} 
 				//echo "OK BRO";
@@ -188,15 +189,17 @@ class Logintamupegawai extends MY_Controller {
 			//echo "OK BRO PASSWORD BENAR";
 			$user = array (
 				'email' => $kiriman['nipbaru'][0]['email'],
+				'nipbaru' => $kiriman['nipbaru'][0]['nipbaru'],
+				'nama' => $kiriman['nipbaru'][0]['nama'],
 				'username' => $kiriman['nipbaru'][0]['username']
 				);
 			
 			$str = $user['email'].$user['username']."1@@@@@!andisinra";
 			$str = hash("sha256", $str );
 			$this->session->set_userdata('hash',$str);
-			$this->session->set_userdata('user_frontoffice',$user);
+			$this->session->set_userdata('user_frontoffice_pegawai',$user);
 
-			redirect( site_url('Akuntamupegawai/index_dashboard_pegawai/'.$data) );
+			redirect( site_url('Akuntamupegawai/index_dashboard_pegawai/NULL/NULL/NULL/NULL/NULL/'.$data) );
 
 		}else{
 			alert("Password tidak cocok");
@@ -206,17 +209,17 @@ class Logintamupegawai extends MY_Controller {
 
 	public function logout()
 		{
-			$this->session->unset_userdata('user_frontoffice');
+			$this->session->unset_userdata('user_frontoffice_tamupegawai');
 			$this->session->set_userdata('keluar', 'keluar');
-			delete_cookie('munirah_muslim');
+			delete_cookie('munirah_muslim_tamupegawai');
 			redirect(site_url('Akuntamupegawai/index'));
 		}
 	
 	public function logout_pegawai()
 	{
-		$this->session->unset_userdata('user_frontoffice');
+		$this->session->unset_userdata('user_frontoffice_pegawai');
 		$this->session->set_userdata('keluar', 'keluar');
-		delete_cookie('munirah_muslim');
+		//delete_cookie('munirah_muslim_pegawai');
 		redirect(site_url('Akuntamupegawai/index_pegawai'));
 	}
 

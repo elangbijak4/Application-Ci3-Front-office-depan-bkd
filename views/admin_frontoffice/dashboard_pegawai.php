@@ -5,8 +5,10 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 //if(!$pegawai){
 //print_r(unserialize($this->session->userdata('user_pegawai')));
   $user_pegawai=unserialize($this->session->userdata('user_pegawai'))['nipbaru'][0];
+  //$this->session->set_userdata('user_pegawai_cadangan',serialize($user_pegawai));
+  $user_pegawai_enkap=$this->enkripsi->enkapsulasiData($user_pegawai);
   //print_r($user_pegawai);
-  //echo $user_pegawai['direktori_foto'];
+  //echo $user_pegawai['nipbaru'];
 //}else{
   //$user['username']=$data['nipbaru'][0]['nipbaru'];
 //}
@@ -47,7 +49,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?php echo site_url('Frontoffice/frontoffice_admin'); ?>">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?php echo site_url('Akuntamupegawai/index_dashboard_pegawai'); ?>">
         <div class="sidebar-brand-icon">
           <img src="<?php echo base_url('/assets/images/logo_sulsel.png');?>" alt="" width="50px">
         </div>
@@ -61,7 +63,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       <li class="nav-item">
         <a class="nav-link" href="">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard <?php echo ucwords($user_pegawai['nama']); ?></span></a>
+          <span><?php echo ucwords($user_pegawai['nama']); ?></span></a>
       </li>
 
       <!-- Divider -->
@@ -74,81 +76,130 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
+        <a class="nav-link collapsed kelas_header_dashboard" href="#" data-toggle="collapse" data-target="#collapseAgenda_unggah_frontoffice" aria-expanded="true" aria-controls="collapseAgenda_unggah_frontoffice">
+          <i class="fas fa-fw fa-upload"></i>
+          <span>Unggah ke Frontoffice</span>
+        </a>
+        <div id="collapseAgenda_unggah_frontoffice" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
+            <a class="collapse-item" style="cursor:pointer;" id="buka_frontoffice"><button class="btn btn-info btn-xs"><i class="fas fa-fw fa-file-upload"></i> Front Office</button></a>
+            <!--<a class="collapse-item" style="cursor:pointer;" id="lihat_bankdata" >Lihat Bankdata</a>-->
+          </div>
+        </div>
+      </li>
+
+      <?php 
+      $base=site_url('Akuntamupegawai/index_dashboard_pegawai');
+      $alamat=$this->enkripsi->enkapsulasiData($base);
+      ?>
+      <script>      
+        $(document).ready(function(){
+          $('#buka_frontoffice').click(function(){
+            var loading = $('#pra_tabel');
+            var tampilkan = $('#penampil_tabel');
+            tampilkan.hide();
+            loading.fadeIn(); 
+            $.post('<?php echo site_url('/Frontoffice/buka_frontoffice/'.$alamat.'/'.'pegawai'); ?>',{ data:'<?php echo $user_pegawai_enkap; ?>'},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+          });
+        });
+      </script> 
+
+      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>Akun Pribadi</span>
+          <i class="fas fa-fw fa-envelope-open-text"></i>
+          <span>Balasan & Log Surat</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Riwayat Unggah Surat</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan" >Surat dibalas</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_terusan" >Surat dikembalikan</a>
-            <a class="collapse-item" href="">Agenda Kerja</a>
-            <a class="collapse-item" href="<?php echo site_url('Akuntamupegawai/index_unggah'); ?>"><button class="btn btn-info">Front Office</button></a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan_frontoffice" ><i class="fas fa-fw fa-envelope-open"></i> Lihat Balasan Surat</a>
+            <a class="collapse-item" style="cursor:pointer;" id="riwayat_surat_saya" ><i class="fas fa-fw fa-history"></i> Riwayat Unggah Surat</a>
+            <!--<a class="collapse-item" href="">Agenda Kerja</a>-->
+            <!--<a class="collapse-item" href="">Kirim Pesan ke Front Office</a>-->
+          </div>
+        </div>
+      </li>
+
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+      $(document).ready(function(){
+        $("#surat_berkas_balasan_frontoffice").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          tampilkan.hide();
+          loading.fadeIn(); 
+          $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampilkan_tabel_balasan_frontoffice_verifikasi/TRUE/nip_yang_dibalas/".$user_pegawai['nipbaru'];?>',{ data:"okbro"},
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+          });
+        });
+        });
+      </script> 
+
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+      $(document).ready(function(){
+        $("#riwayat_surat_saya").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          var limit=20;
+          var page=1;
+          var page_awal=1;
+          var jumlah_page_tampil=4;
+          var nilai_kolom_cari = <?php echo $user_pegawai['nipbaru']; ?>;
+          var kolom_cari ='nip';
+
+          tampilkan.hide();
+          loading.fadeIn(); 
+          $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampil_tabel_cruid_new_verifikasi_untuk_log_surat_masuk_tamu_pegawai_di_akun_pegawai/log_surat_masuk/idlog_masuk/desc/";?>'+limit+'/'+page+'/'+page_awal+'/'+jumlah_page_tampil+'/TRUE/'+kolom_cari+'/'+nilai_kolom_cari+'/<?php echo $user_pegawai['nipbaru']; ?>',{ data:"okbro"},
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+          });
+        });
+        });
+        
+      </script> 
+
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-user-tie"></i>
+          <span>Profil Saya</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Kelola:</h6>
+            <a class="collapse-item profil_saya" style="cursor:pointer;" id="profil_saya"><i class="fas fa-fw fa-user-circle"></i> Profil Saya</a>
+            <a class="collapse-item" style="cursor:pointer;" id="kelola_profil"><i class="fas fa-fw fa-user-check"></i> Kelola Profil</a>
+            <!--<a class="collapse-item" href="<?php echo site_url('Frontoffice/halaman_unggah_surat_pegawai_lewat_akun') ?>"><button class="btn btn-info btn-xs">Front Office</button></a>-->
           </div>
         </div>
       </li>
 
       <!-- Nav Item - Utilities Collapse Menu -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-wrench"></i>
-          <span>Meja Kerja Virtual</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities_pass" aria-expanded="true" aria-controls="collapseUtilities_pass">
+          <i class="fas fa-fw fa-shield-alt"></i>
+          <span>Kelola Password</span>
         </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+        <div id="collapseUtilities_pass" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Kelola:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="profil_saya">Profil Saya</a>
-            <a class="collapse-item" style="cursor:pointer;" id="kelola_profil">Kelola Profil</a>
-            <a class="collapse-item" style="cursor:pointer;" id="ubah_password">Ubah Password</a>
-            <a class="collapse-item" href="<?php echo site_url('Akuntamupegawai/index_unggah') ?>"><button class="btn btn-info btn-xs">Front Office</button></a>
+            <a class="collapse-item" style="cursor:pointer;" id="ubah_password"><i class="fas fa-fw fa-key"></i> Ubah Password</a>
+            <a class="collapse-item" style="cursor:pointer;" id="ubah_email_pemulihan"><i class="fas fa-fw fa-envelope"></i> Email Pemulihan</a>
+            <!--<a class="collapse-item" href="<?php echo site_url('Frontoffice/halaman_unggah_surat_pegawai_lewat_akun') ?>"><button class="btn btn-info btn-xs">Front Office</button></a>-->
           </div>
         </div>
       </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Addons
-      </div>
-
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>Pages</span>
-        </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Login Screens:</h6>
-            <a class="collapse-item" href="login.html">Login</a>
-            <a class="collapse-item" href="register.html">Register</a>
-            <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-            <div class="collapse-divider"></div>
-            <h6 class="collapse-header">Other Pages:</h6>
-            <a class="collapse-item" href="404.html">404 Page</a>
-            <a class="collapse-item" href="blank.html">Blank Page</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- Nav Item - Charts -->
-      <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Charts</span></a>
-      </li>
-
-      <!-- Nav Item - Tables -->
-      <li class="nav-item">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Tables</span></a>
-      </li>
-
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 
@@ -209,14 +260,16 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
               </div>
             </li>
 
-            <!-- Nav Item - Alerts -->
+            <!-- Nav Item - Alerts 
             <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
-                <!-- Counter - Alerts -->
+                -->
+                <!-- Counter - Alerts 
                 <span class="badge badge-danger badge-counter">3+</span>
               </a>
-              <!-- Dropdown - Alerts -->
+              -->
+              <!-- Dropdown - Alerts
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">
                   Alerts Center
@@ -257,15 +310,17 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
               </div>
             </li>
-
-            <!-- Nav Item - Messages -->
+            -->
+            <!-- Nav Item - Messages 
             <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-envelope fa-fw"></i>
-                <!-- Counter - Messages -->
+                -->
+                <!-- Counter - Messages
                 <span class="badge badge-danger badge-counter">7</span>
               </a>
-              <!-- Dropdown - Messages -->
+              -->
+              <!-- Dropdown - Messages 
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                 <h6 class="dropdown-header">
                   Message Center
@@ -313,7 +368,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
               </div>
             </li>
-
+            -->
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <!-- Nav Item - User Information -->
@@ -324,7 +379,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item profil_saya" href="#">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Profile
                 </a>
@@ -422,7 +477,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
           <!-- Script untuk pemanggilan ajax -->
           <script>      
           $(document).ready(function(){
-            $("#profil_saya").click(function(){
+            $(".profil_saya").click(function(){
               var loading = $("#pra_tabel");
               var tampilkan = $("#penampil_tabel");
               tampilkan.hide();
@@ -472,11 +527,25 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
                 tampilkan.fadeIn(2000);
               });
             });
+
+            $("#ubah_email_pemulihan").click(function(){
+              var loading = $("#pra_tabel");
+              var tampilkan = $("#penampil_tabel");
+              tampilkan.hide();
+              loading.fadeIn(); 
+              $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/email_pemulihan/".$user_pegawai['nipbaru'];?>',{ data: "ok bro"},
+              function(data,status){
+                loading.fadeOut();
+                tampilkan.html(data);
+                tampilkan.fadeIn(2000);
+              });
+            });
             });
             
           </script>
 
           <!-- Script untuk pemanggilan ajax -->
+          <!--
           <script>      
           $(document).ready(function(){
               var loading = $("#pra_tabel");
@@ -492,6 +561,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
             });
             
           </script> 
+          -->
 
           <!--Skrip untuk menampilkan modal saat window onload-->
           <script type="text/javascript">
@@ -652,6 +722,97 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 			//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
 		}
   ?>
+
+  
+
+<?php
+  
+  #0002kiriman_enkrip
+  if(isset($gagal)&&($gagal=='gagal')){
+    alert("Gagal mengunggah surat...");
+    $this->session->set_userdata('flag0002',NULL);
+  }else{
+    if(isset($kiriman_enkrip)){
+      $kiriman_dekrip=$this->enkripsi->dekapsulasiData($kiriman_enkrip);
+      //print_r($kiriman_dekrip);
+      $kiriman_enkrip_29=$this->enkripsi->enkapsulasiData($kiriman_dekrip[29]);
+      $this->session->set_userdata('flag0002',NULL);
+      //Lakukan perekaman ke log surat masuk di bankdata.
+      echo "
+      <script>
+      $(document).ready(function(){
+          var tampilkan = $(\"#status_kirim_log_ke_bankdata\");
+          $.post('".$this->config->item('link_frontoffice')."index.php/Frontoffice/cari_tau_id_surat_masuk/digest_signature/".$kiriman_enkrip_29."/idsurat_masuk',{ data:\"okbro\"},
+          function(data,status){
+            $.post('".site_url('/Frontoffice/lengkapi_kiriman_untuk_log/')."',{ idsurat_masuk:data,kiriman_enkrip:\"".$kiriman_enkrip."\"},
+            function(data,status){
+              $.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data_enkrip:data},
+              function(data,status){
+                //tampilkan.html(data);
+                alert('Surat sukses diunggah...');
+              });
+            });
+          });
+        });
+      </script>
+      ";
+    } 
+  }
+  
+  #end0002kiriman_enkrip
+?>
+
+<!--Untuk menampilkan nota pdf tanda bukti unggah surat di frontoffice -->
+<!--#0004-->
+<?php
+if(isset($data_kiriman_enkrip_f)&&isset($date_note_enkrip_f)){
+  #dekap dulu bari ambil digest lalu kirim ke frontoffice untuk cek id.
+  $kiriman_dekrip=$this->enkripsi->dekapsulasiData($data_kiriman_enkrip_f);
+  $kiriman_enkrip_signature=$this->enkripsi->enkapsulasiData($kiriman_dekrip['signature']);
+  
+  echo "
+    <script>
+    $(document).ready(function(){
+        var loading = $(\"#pra_tabel\");
+        var tampilkan = $(\"#penampil_tabel\");
+        loading.fadeIn();
+        tampilkan.fadeOut();
+        $.post('".$this->config->item('link_frontoffice')."index.php/Frontoffice/cari_tau_id_surat_masuk/digest_signature/".$kiriman_enkrip_signature."/idsurat_masuk',{ data:\"okbro\"},
+        function(data_id,status){
+            $.post('".site_url("/Frontoffice/penampil_nota_pdf_bukti_unggah_frontoffice/").$data_kiriman_enkrip_f."/".$date_note_enkrip_f."/"."'+data_id,{selected:\"okbro\"},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+        });
+    });
+    </script>
+  ";
+  
+}else{
+  echo "
+  <script>      
+    $(document).ready(function(){
+        var loading = $(\"#pra_tabel\");
+        var tampilkan = $(\"#penampil_tabel\");
+        tampilkan.hide();
+        loading.fadeIn(); 
+        $.post('".site_url("/Akuntamupegawai/tampilkan_profil_pegawai/".$user_pegawai['nipbaru'])."',{ data:\"okbro\"},
+        function(data,status){
+          loading.fadeOut();
+          tampilkan.html(data);
+          tampilkan.fadeIn(2000);
+        });
+      });
+      
+    </script>
+  ";
+}
+?>
+<!--End menampilkan pdf-->
+<!--#end0004-->
+
   <script>
   if ( window.history.replaceState ) {
     window.history.replaceState( null, null, window.location.href );

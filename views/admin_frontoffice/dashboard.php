@@ -59,19 +59,19 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       <!-- Heading -->
       <div class="sidebar-heading">
         Interface
-      </div>
+      </div>      
       
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-envelope"></i>
+          <i class="fas fa-fw fa-home"></i>
           <span>Surat Front Office</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" >Surat Masuk</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan_frontoffice" >Surat Balasan</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas" ><i class="fas fa-fw fa-sign-in-alt"></i> Surat Masuk</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan_frontoffice" ><i class="fas fa-fw fa-sign-out-alt"></i> Surat Balasan</a>
           </div>
         </div>
       </li>
@@ -126,12 +126,12 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
         <div id="collapseTwo_2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_masuk_internal" >Surat Masuk Internal</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_terusan" >Surat Terusan Sekretariat</a>
-            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan" >Surat Balasan Sekretariat</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_masuk_internal" ><i class="fas fa-fw fa-envelope-open"></i> Masuk Internal</a>
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_terusan" ><i class="fas fa-fw fa-envelope-open"></i> Terusan Sekretariat</a><!--
+            <a class="collapse-item" style="cursor:pointer;" id="surat_berkas_balasan" >Surat Balasan Sekretariat</a>-->
             <a style="cursor:pointer;color:white;margin-left:20px;margin-bottom:10px;" class="d-sm-inline-block btn btn-sm btn-warning shadow-sm unggah_surat_berkas" data-toggle="modal" data-target="#myModal_suratbaru" id="unggah_surat_berkas" ><i class="fas fa-paper-plane fa-sm text-white-100"></i> Kirim Surat Baru </a>
             <a style="cursor:pointer;color:white;margin-left:20px;margin-bottom:10px;" class="d-sm-inline-block btn btn-sm btn-success shadow-sm buat_surat_baru" id="buat_surat_baru" data-toggle="modal" data-target="#myModal_suratbaru"><i class="fas fa-edit fa-sm text-white-100"></i> Menulis Surat Baru</a>
-            <a class="collapse-item" style="cursor:pointer;" id="catatan_surat_keluar" >Catatan Surat Keluar</a>
+            <!--<a class="collapse-item" style="cursor:pointer;" id="catatan_surat_keluar" >Catatan Surat Keluar</a>-->
           </div>
         </div>
       </li>
@@ -192,14 +192,14 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAgenda" aria-expanded="true" aria-controls="collapseAgenda">
-          <i class="fas fa-fw fa-book"></i>
+        <i class="fas fa-fw fa-calendar-alt"></i>
           <span>Agenda Front Office</span>
         </a>
         <div id="collapseAgenda" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Ruang Virtual:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="agenda_hari_ini" >Agenda hari ini</a>
-            <a class="collapse-item" style="cursor:pointer;" id="kelola_agenda" >Kelola Agenda</a>
+            <a class="collapse-item" style="cursor:pointer;" id="agenda_hari_ini" ><i class="fas fa-fw fa-calendar-day"></i> Agenda hari ini</a>
+            <a class="collapse-item" style="cursor:pointer;" id="kelola_agenda" ><i class="fas fa-fw fa-calendar-check"></i> Kelola Agenda</a>
             <a class="collapse-item" style="cursor:pointer;" id="kirim_undangan_acara" data-toggle="modal" data-target="#myModal_suratbaru"><span class="badge badge-primary badge-counter" style="font-size:12px;">Kirim Undangan Acara</span></a>
           </div>
         </div>
@@ -223,7 +223,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       </script>
       
       <?php
-      $tabel_ok=$this->session->userdata('tabel');
+      $tabel_ok=$this->session->userdata('tabel_frontoffice');
       $fields = $this->viewfrommyframework->penarik_semua_nama_kolom_sebuah_tabel_view('tbagenda_kerja');
       ?>
       <script>      
@@ -355,6 +355,158 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
         });
         
       </script> 
+
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAgenda_pemulihan" aria-expanded="true" aria-controls="collapseAgenda_pemulihan">
+        <i class="fas fa-fw fa-unlock-alt"></i>
+          <span>Pemulihan Akun Tamu</span>
+        </a>
+        <div id="collapseAgenda_pemulihan" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Ruang Virtual:</h6>
+            <a class="collapse-item" style="cursor:pointer;" id="lihat_permintaan_pemulihan" ><i class="fas fa-fw fa-id-card-alt"></i> Lihat permintaan</a>
+          </div>
+        </div>
+      </li>
+
+      <script>      
+        $(document).ready(function(){
+          $('#lihat_permintaan_pemulihan').click(function(){
+            var loading = $('#pra_tabel');
+            var tampilkan = $('#penampil_tabel');
+            tampilkan.hide();
+            loading.fadeIn(); 
+            $.post('<?php echo site_url("/Frontoffice/tampil_tabel_cruid/tabel_pemulihan_akun/idpemulihan/desc");?>',{ data:"okbro"},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+          });
+        });
+      </script> 
+      
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#ubahpassword" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-key"></i>
+          <span>Kelola Password</span>
+        </a>
+        <div id="ubahpassword" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Kelola Password:</h6>
+            <?php $listTable=$this->viewfrommyframework->table_pemilik_kolom_password_dan_kolom_perujuk_view('password'); //xx4
+                  foreach($listTable as $key=>$unit){
+                    if($unit[0]!=='induk_pegawai' && $unit[0]!=='admin'){
+                      if($unit[0]=='identpeg'){
+            ?>
+                        <a class="collapse-item" style="cursor:pointer;" id="<?php echo "password_".$unit[0]; ?>"><i class="fas fa-fw fa-user-secret"></i> <?php echo "Password Pegawai"; ?></a> 
+            <?php     }else{ ?>
+                        <a class="collapse-item" style="cursor:pointer;" id="<?php echo "password_".$unit[0]; ?>"><i class="fas fa-fw fa-user-secret"></i> <?php echo "Password ".ucwords($unit[0]); ?></a> 
+            <?php
+                      }
+                    }
+                  }
+            ?>
+          </div>
+        </div>
+      </li>
+      
+      
+      <?php
+            foreach($listTable as $key=>$unit){//xx2
+              if($unit[0]!=='induk_pegawai' && $unit[0]!=='admin'){
+                echo "<script> 
+                      $(document).ready(function(){
+                        $(\"#password_".$unit[0]."\").click(function(){
+                          var loading = $(\"#pra_tabel\");
+                          var tampilkan = $(\"#penampil_tabel\");
+                          tampilkan.hide();
+                          loading.fadeIn(); 
+                          $.post('".site_url("/Frontoffice/tampilkan_form_ubah_password/".$unit[0]."/".$unit[1]."/desc")."',{ data:\"okbro\"},
+                          function(data,status){
+                            loading.fadeOut();
+                            tampilkan.html(data);
+                            tampilkan.fadeIn(2000);
+                          });
+                        });
+                        });
+                      </script>
+                ";
+              }
+            }
+            ?>
+      
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <!--
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsevirtual" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-desktop"></i>
+          <span>Meja Kerja Virtual</span>
+        </a>
+        <div id="collapsevirtual" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
+            <h6 class="collapse-header">Kelola:</h6>
+            <a class="collapse-item" style="cursor:pointer;" id="user_unggah_ok" data-toggle="modal" data-target="#myModal_suratbaru">User Unggah</a>
+            <a class="collapse-item" style="cursor:pointer;" id="notifikasi_surat_ok">Notifikasi Surat</a>
+            <a class="collapse-item" style="cursor:pointer;" id="notifikasi_nota">Notifikasi Nota</a>
+            <a class="collapse-item" href="<?php echo site_url('Frontoffice/frontoffice_index'); ?>"><button class="btn btn-info btn-xs">Front Office</button></a>
+          </div>
+        </div>
+      </li>
+      -->
+      <script>      
+			$(document).ready(function(){
+				$("#user_unggah_ok").click(function(){
+					var loading = $("#pra_myModal_suratbaru");
+					var tampilkan = $("#penampil_myModal_suratbaru");
+					tampilkan.hide();
+					loading.fadeIn(); 
+					$.post('<?php echo site_url('/Frontoffice/sekretariat_unggahsuratbaru');?>',{ data:"okbro"},
+					function(data,status){
+						loading.fadeOut();
+						tampilkan.html(data);
+						tampilkan.fadeIn(2000);
+					});
+				});
+			  });
+			</script>
+
+      <script>      
+        $(document).ready(function(){
+          $('#notifikasi_nota').click(function(){
+            var loading = $('#pra_tabel');
+            var tampilkan = $('#penampil_tabel');
+            tampilkan.hide();
+            loading.fadeIn(); 
+            $.post('<?php echo site_url('/Frontoffice/pesan_rencana_konstruksi'); ?>',{ data:'okbro'},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+          });
+        });
+      </script> 
+
+      <!-- Script untuk pemanggilan ajax -->
+      <script>      
+        $(document).ready(function(){
+          $('#notifikasi_surat_ok').click(function(){
+            var loading = $('#pra_tabel');
+            var tampilkan = $('#penampil_tabel');
+            tampilkan.hide();
+            loading.fadeIn(); 
+            $.post('<?php echo site_url('/Frontoffice/notifikasi_surat_total'); ?>',{ data:'okbro'},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+          });
+        });
+      </script> 
   
 
       <?php 
@@ -363,7 +515,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-database"></i>
-          <span>CRUID Basisdata</span>
+          <span>Kelola Basisdata</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
@@ -390,11 +542,11 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
       <!-- Script untuk pemanggilan ajax -->
       <?php 
-          $tabel_ok=$this->session->userdata('tabel');
+          $tabel_ok=$this->session->userdata('tabel_frontoffice');
           if($tabel_ok)$fields = $this->viewfrommyframework->penarik_semua_nama_kolom_sebuah_tabel_view($tabel_ok);
           //echo "<br>OK BROOOOOO DALAM";
-			    //echo "<br>INI NILAI MODAL tabel SETELAH: ".$this->session->userdata('modal');
-			    //echo "<br>INI NILAI SESSION tabel SETELAH: ".$tabel_ok;
+          //echo "<br>INI NILAI MODAL tabel SETELAH: ".$this->session->userdata('modal');
+          //echo "<br>INI NILAI SESSION tabel SETELAH: ".$tabel_ok;
           ?>
           <script>      
           $(document).ready(function(){
@@ -447,167 +599,17 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
           }
           ?>
       
-      
-      <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#ubahpassword" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-user-secret"></i>
-          <span>Kelola Password</span>
-        </a>
-        <div id="ubahpassword" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Kelola Password:</h6>
-            <?php $listTable=$this->viewfrommyframework->table_pemilik_kolom_password_dan_kolom_perujuk_view('password'); //xx4
-                  foreach($listTable as $key=>$unit){
-                    if($unit[0]!=='induk_pegawai' && $unit[0]!=='admin'){
-                      if($unit[0]=='identpeg'){
-            ?>
-                        <a class="collapse-item" style="cursor:pointer;" id="<?php echo "password_".$unit[0]; ?>"><?php echo "Password Pegawai"; ?></a> 
-            <?php     }else{ ?>
-                        <a class="collapse-item" style="cursor:pointer;" id="<?php echo "password_".$unit[0]; ?>"><?php echo "Password ".ucwords($unit[0]); ?></a> 
-            <?php
-                      }
-                    }
-                  }
-            ?>
-          </div>
-        </div>
-      </li>
-      
-      
-      <?php
-            foreach($listTable as $key=>$unit){//xx2
-              if($unit[0]!=='induk_pegawai' && $unit[0]!=='admin'){
-                echo "<script> 
-                      $(document).ready(function(){
-                        $(\"#password_".$unit[0]."\").click(function(){
-                          var loading = $(\"#pra_tabel\");
-                          var tampilkan = $(\"#penampil_tabel\");
-                          tampilkan.hide();
-                          loading.fadeIn(); 
-                          $.post('".site_url("/Frontoffice/tampilkan_form_ubah_password/".$unit[0]."/".$unit[1]."/desc")."',{ data:\"okbro\"},
-                          function(data,status){
-                            loading.fadeOut();
-                            tampilkan.html(data);
-                            tampilkan.fadeIn(2000);
-                          });
-                        });
-                        });
-                      </script>
-                ";
-              }
-            }
-            ?>
-      
-      <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsevirtual" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-desktop"></i>
-          <span>Meja Kerja Virtual</span>
-        </a>
-        <div id="collapsevirtual" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
-            <h6 class="collapse-header">Kelola:</h6>
-            <a class="collapse-item" style="cursor:pointer;" id="user_unggah_ok" data-toggle="modal" data-target="#myModal_suratbaru">User Unggah</a>
-            <a class="collapse-item" style="cursor:pointer;" id="notifikasi_surat_ok">Notifikasi Surat</a>
-            <a class="collapse-item" style="cursor:pointer;" id="notifikasi_nota">Notifikasi Nota</a>
-            <a class="collapse-item" href="<?php echo site_url('Frontoffice/frontoffice_index'); ?>"><button class="btn btn-info btn-xs">Front Office</button></a>
-          </div>
-        </div>
-      </li>
-
-      <script>      
-			$(document).ready(function(){
-				$("#user_unggah_ok").click(function(){
-					var loading = $("#pra_myModal_suratbaru");
-					var tampilkan = $("#penampil_myModal_suratbaru");
-					tampilkan.hide();
-					loading.fadeIn(); 
-					$.post('<?php echo site_url('/Frontoffice/sekretariat_unggahsuratbaru');?>',{ data:"okbro"},
-					function(data,status){
-						loading.fadeOut();
-						tampilkan.html(data);
-						tampilkan.fadeIn(2000);
-					});
-				});
-			  });
-			</script>
-
-      <script>      
-        $(document).ready(function(){
-          $('#notifikasi_nota').click(function(){
-            var loading = $('#pra_tabel');
-            var tampilkan = $('#penampil_tabel');
-            tampilkan.hide();
-            loading.fadeIn(); 
-            $.post('<?php echo site_url('/Frontoffice/pesan_rencana_konstruksi'); ?>',{ data:'okbro'},
-            function(data,status){
-              loading.fadeOut();
-              tampilkan.html(data);
-              tampilkan.fadeIn(2000);
-            });
-          });
-        });
-      </script> 
-
-      <!-- Script untuk pemanggilan ajax -->
-      <script>      
-        $(document).ready(function(){
-          $('#notifikasi_surat_ok').click(function(){
-            var loading = $('#pra_tabel');
-            var tampilkan = $('#penampil_tabel');
-            tampilkan.hide();
-            loading.fadeIn(); 
-            $.post('<?php echo site_url('/Frontoffice/notifikasi_surat_total'); ?>',{ data:'okbro'},
-            function(data,status){
-              loading.fadeOut();
-              tampilkan.html(data);
-              tampilkan.fadeIn(2000);
-            });
-          });
-        });
-      </script> 
 
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
       <div class="sidebar-heading">
-        Addons
+        Unggah Surat
       </div>
-
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>Pages</span>
-        </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Login Screens:</h6>
-            <a class="collapse-item" href="#">Login</a>
-            <a class="collapse-item" href="#">Register</a>
-            <a class="collapse-item" href="#">Forgot Password</a>
-            <div class="collapse-divider"></div>
-            <h6 class="collapse-header">Other Pages:</h6>
-            <a class="collapse-item" href="#">404 Page</a>
-            <a class="collapse-item" href="#">Blank Page</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- Nav Item - Charts -->
-      <li class="nav-item">
-        <a class="nav-link" href="#"><!--charts.html">-->
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Charts</span></a>
-      </li>
-
-      <!-- Nav Item - Tables -->
-      <li class="nav-item">
-        <a class="nav-link" href="#"><!--tables.html">-->
-          <i class="fas fa-fw fa-table"></i>
-          <span>Tables</span></a>
+      <a href="<?php echo site_url('Frontoffice/frontoffice_index'); ?>"><button style="width:85%;margin-left:16px;margin-top:20px;" class="btn btn-info btn-sm">Unggah Front Office</button></a>
       </li>
 
       <!-- Divider -->
@@ -933,30 +935,58 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin Bidang</span>
-                <img class="img-profile rounded-circle" src="<?php echo base_url('login/p1.png');?>" alt="">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $this->session->userdata('nama_profil'); ?></span>
+                <img class="img-profile rounded-circle" id="img_icon" src="<?php echo base_url('login/p1.png');?>" alt="">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" style="cursor:pointer;" id="profil">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Profile
                 </a>
-                <a class="dropdown-item" href="#">
+                <!-- Script untuk memanggil halaman ptofil -->
+                <script>      
+                $(document).ready(function(){
+                  $("#profil").click(function(){
+                    var loading = $("#pra_tabel");
+                    var tampilkan = $("#penampil_tabel");
+                    tampilkan.hide();
+                    loading.fadeIn(); 
+                    $.post('<?php echo site_url('/Frontoffice/tampilkan_profil2');?>',{ data:"okbro"},
+                    function(data,status){
+                      loading.fadeOut();
+                      tampilkan.html(data);
+                      tampilkan.fadeIn(2000);
+                    });
+                  });
+
+                    var tampilkan = $("#img_icon");
+                    tampilkan.hide();
+                    $.post('<?php echo site_url('/Frontoffice/penampil_icon_foto_profil');?>',{ data:"okbro"},
+                    function(data,status){
+                      tampilkan.attr("src", data);;
+                      tampilkan.fadeIn(2000);
+                    });
+                  });
+                </script> 
+
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingmodal">
                   <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                   Settings
                 </a>
+                <!--
                 <a class="dropdown-item" href="#">
                   <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                   Activity Log
                 </a>
+                -->
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  Keluar
                 </a>
-              </div>
-            </li>
+                </div>
+                </li>
 
           </ul>
 
@@ -976,8 +1006,8 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
             display:none;
           }
         </style>
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-          <h5 class="h5 mb-0 text-gray-800">e-Sinra Ruang <?php echo $this->config->item('nama_opd'); ?> Prov. Sulawesi Selatan</h5>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">        
+          <h5 class="h5 mb-0 text-gray-800" id='penampil_tabel_header_atas'>e-Sinra Ruang <?php echo $this->config->item('nama_bidang'); ?></h5>
           <!--INGAT UNTUK MENGHAPUS STYLE CLASS d-none  AGAR BISA TETAP ADA DI DALAM MODE MOBILE/HP-->
           <a style="cursor:pointer;color:white;" class="btn btn-sm btn-primary shadow-sm" id="cetak_laporan" data-toggle="modal" data-target="#myModal_suratbaru_sedang"><i class="fas fa-download fa-sm text-white-50"></i> Cetak Laporan</a>
           <a style="cursor:pointer;color:white;" class="btn btn-sm btn-danger shadow-sm" id="cetak_laporan_periodik_agenda" data-toggle="modal" data-target="#myModal_suratbaru_sedang"><i class="fas fa-download fa-sm text-white-50"></i> Cetak Periodik</a>
@@ -1185,6 +1215,24 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
           <a class="btn btn-primary" href="<?php echo base_url('index.php/login/login/logout') ?>">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Logout Modal-->
+  <div class="modal fade" id="settingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Mohon maaf halaman Setting dalam rencana konstruksi</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Direncanakan untuk mengatur tampilan menu dan dashboard</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>

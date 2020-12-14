@@ -7,28 +7,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<title>Login Untuk Searching Surat...</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="<?php echo base_url('/public/asset_login_search/images/icons/favicon.png');?>"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/css/bootstrap.min.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/fonts/font-awesome-4.7.0/css/font-awesome.min.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/fonts/Linearicons-Free-v1.0.0/icon-font.min.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/animate/animate.css');?>">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/css-hamburgers/hamburgers.min.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/animsition/css/animsition.min.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/select2/select2.min.css');?>">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/daterangepicker.css');?>">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/util.css');?>">
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/main.css');?>">
-<!--===============================================================================================-->
+	<!--===============================================================================================-->	
+		<link rel="icon" type="image/png" href="<?php echo base_url('/public/asset_login_search/images/icons/favicon.png');?>"/>
+		<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/css/bootstrap.min.css');?>">
+		<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/fonts/font-awesome-4.7.0/css/font-awesome.min.css');?>">
+		<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/util.css');?>">
+		<link rel="stylesheet" type="text/css" href="<?php echo base_url('/public/asset_login_search/css/main.css');?>">
+	<link href="<?php echo base_url('/dashboard/vendor/fontawesome-free/css/all.min.css');?>" rel="stylesheet" type="text/css">
+	<!--===============================================================================================-->
+  <!-- Custom styles for this template-->
+  <script src="<?php echo base_url('/public/vendor3.4.1/jquery/3.4.1/jquery.min.js'); ?>"></script>
+  <script src="<?php echo base_url('/public/vendor3.4.1/bootstrap/3.4.1/js/bootstrap.min.js'); ?>"></script>
 </head>
 <body>
 	
@@ -68,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div>
-							<a href="#" class="txt3">
+							<a href="#" class="txt3" id="lupa_password" data-toggle="modal" data-target="#myModal">
 								Forgot Password?
 							</a>
 						</div>
@@ -90,7 +79,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 
 	<div id="dropDownSelect1"></div>
-	
+	<script>
+	$(document).ready(function(){
+		$("#lupa_password").click(function(){
+			var loading = $("#pra_register");
+			var tampilkan = $("#penampil_register");
+			tampilkan.hide();
+			loading.fadeIn(); 
+			$.post('<?php echo site_url('/Frontoffice/lupa_password/tamu');?>',{ data:"okbro"},
+			function(data,status){
+				loading.fadeOut();
+				tampilkan.html(data);
+				tampilkan.fadeIn(2000);
+			});
+		});
+	});
+	</script>
+
+	<!-- Modal1 -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content" style='background-color: rgba(200, 200, 200, 0.95);'>
+			<div class="modal-header">
+			<!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+			<h5 class="modal-title">
+				<img src="<?php echo base_url('/assets/assets_login/images/LogoSulselH.png');?>" class="logo_sulsel" style="height:40px;width:auto;float:left;margin-right:20px;" />
+				e-Office BKD Prov. Sulsel
+			</h5>
+			</div>
+			<div class="modal-body">
+			<center>
+			<div id='pra_register' style='width:65%;' align='center' >
+			<i class='fa-3x fas fa-spinner fa-pulse' <?php echo $this->config->item('style_progres_bulat_admin');?>></i>
+			</center>
+			<div id=penampil_register align="center" style='width:100%;overflow:auto;'></div>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+		</div>
+	</div>
+
 <?php 
 $error = $this->session->userdata('form_error');
 if ($error)
@@ -122,21 +153,10 @@ $this->session->unset_userdata('percobaan_login');
 $this->session->unset_userdata('keluar');
 ?>
 <!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/jquery/jquery-3.2.1.min.js');?>"></script>
+<script src="<?php echo base_url('/public/asset_login_search/vendor/jquery/jquery-3.2.1.min.js');?>"></script>
+<script src="<?php echo base_url('/public/asset_login_search/js/main.js');?>"></script>
+<script src="<?php echo base_url('/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js');?>"></script>
 <!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/animsition/js/animsition.min.js');?>"></script>
-<!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/js/popper.js');?>"></script>
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/bootstrap/js/bootstrap.min.js');?>"></script>
-<!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/select2/select2.min.js');?>"></script>
-<!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/moment.min.js');?>"></script>
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/daterangepicker/daterangepicker.js');?>"></script>
-<!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/vendor/countdowntime/countdowntime.js');?>"></script>
-<!--===============================================================================================-->
-	<script src="<?php echo base_url('/public/asset_login_search/js/main.js');?>"></script>
 
 </body>
 </html>

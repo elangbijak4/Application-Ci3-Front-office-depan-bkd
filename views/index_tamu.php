@@ -142,7 +142,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					var tampilkan = $("#penampil");
 					tampilkan.hide();
 					loading.fadeIn(); 
-					$.post('<?php echo site_url('/Frontoffice/frontoffice_unggahberkas');?>',{ data:"okbro"},
+					$.post('<?php echo site_url('/Frontoffice/frontoffice_unggahberkas/tamu');?>',{ data:"okbro"},
 					function(data,status){
 						loading.fadeOut();
 						tampilkan.html(data);
@@ -390,7 +390,6 @@ if(isset($kiriman_enkrip)){
 	$(document).ready(function(){
 		  var tampilkan = $(\"#status_kirim_log_ke_bankdata\");
 		  $.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/".$kiriman_enkrip."',{ data:\"okbro\"},
-		  //$.post('".site_url('Frontoffice/tesbro9/'.$kiriman_enkrip)."',{ data:\"okbro\"},
 		  function(data,status){
 			  tampilkan.html(data);
 		  });
@@ -407,7 +406,7 @@ if(isset($kiriman_enkrip)){
 			<div id='modalku' style='background: #777; position:fixed; left:0;right:0;top:0;bottom:0;z-index:90000; opacity:0.9;'>
 			</div>
 			<div id='panel'  style=''>
-			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src)."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
+			<iframe id=\"target_pdf\" name=\"target_pdf\" src=\"".site_url($src)."/".$idsurat_masuk[0]."\" style=\"left:5%;right:5%;top:5%;bottom:5%;border:0px solid #000;position:absolute;width:90%;height:70%\"></iframe>
 			<button type=\"button\" class=\"btn btn-info okbro\" style=\"bottom:20px;right:20px; position:absolute;\" onclick='document.getElementById(\"panel\").style.display=\"none\";document.getElementById(\"modalku\").style.display=\"none\";'>Close</button>
 			<button type=\"button\" class=\"btn btn-warning\" style=\"bottom:20px;left:20px; position:absolute;\">Klik >> untuk cetak</button>
 			</div>

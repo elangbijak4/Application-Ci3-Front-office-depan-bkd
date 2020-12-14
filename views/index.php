@@ -333,7 +333,6 @@ if(isset($kiriman_enkrip)){
 	$(document).ready(function(){
 		  var tampilkan = $(\"#status_kirim_log_ke_bankdata\");
 		  $.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/".$kiriman_enkrip."',{ data:\"okbro\"},
-		  //$.post('".site_url('Frontoffice/tesbro9/'.$kiriman_enkrip)."',{ data:\"okbro\"},
 		  function(data,status){
 			  tampilkan.html(data);
 		  });

@@ -116,12 +116,47 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
         });
       </script> 
 
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed kelas_header_dashboard" href="#" data-toggle="collapse" data-target="#collapseAgenda_histori" aria-expanded="true" aria-controls="collapseAgenda_histori">
+          <i class="fas fa-fw fa-history"></i>
+          <span>Lacak History Surat</span>
+        </a>
+        <div id="collapseAgenda_histori" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
+            <a class="collapse-item" style="cursor:pointer;" id="lihat_histori_frontoffice" ><i class="fas fa-fw fa-search-location"></i> Log Surat Front Office</a>
+            <!--<a class="collapse-item" style="cursor:pointer;" id="lihat_bankdata" >Lihat Bankdata</a>-->
+          </div>
+        </div>
+      </li>
+
+      <script>      
+      $(document).ready(function(){
+        $("#lihat_histori_frontoffice").click(function(){
+          var loading = $("#pra_tabel");
+          var tampilkan = $("#penampil_tabel");
+          var posisi= $("#penampil_tabel_header_atas");
+          posisi.fadeOut(500);
+          tampilkan.hide();
+          loading.fadeIn(); 
+          $.post('<?php echo $this->config->item('bank_data');?>/index.php/Frontoffice/tampilkan_tabel_log_surat_masuk_new_verifikasi/',{ data:"okbro"},
+          function(data,status){
+            loading.fadeOut();
+            tampilkan.html(data);
+            tampilkan.fadeIn(2000);
+            posisi.html('History >> Jejak Surat Front Office');
+            posisi.fadeIn(2000);
+          });
+        });
+        });
+      </script>
+
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo_2" aria-expanded="true" aria-controls="collapseTwo_2">
           <i class="fas fa-fw fa-envelope"></i>
-          <span>Surat Internal BKD</span>
+          <span>Surat Internal <?php echo $this->config->item('nama_opd');?></span>
         </a>
         <div id="collapseTwo_2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded" onclick='$("#cetak_laporan").show();$("#cetak_laporan_periodik_agenda").hide();'>
@@ -358,6 +393,37 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAgenda_pemulihan_pegawai" aria-expanded="true" aria-controls="collapseAgenda_pemulihan_pegawai">
+        <i class="fas fa-fw fa-user-shield"></i>
+          <span>Pemulihan Akun Pegawai</span>
+        </a>
+        <div id="collapseAgenda_pemulihan_pegawai" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Ruang Virtual:</h6>
+            <a class="collapse-item" style="cursor:pointer;" id="lihat_permintaan_pemulihan_akun_pegawai" ><i class="fas fa-fw fa-user-check"></i> Lihat permintaan</a>
+          </div>
+        </div>
+      </li>
+
+      <script>      
+        $(document).ready(function(){
+          $('#lihat_permintaan_pemulihan_akun_pegawai').click(function(){
+            var loading = $('#pra_tabel');
+            var tampilkan = $('#penampil_tabel');
+            tampilkan.hide();
+            loading.fadeIn(); 
+            $.post('<?php echo $this->config->item('bank_data')."/index.php/Frontoffice/tampil_tabel_cruid/tabel_pemulihan_akun_pegawai/idpemulihan/desc";?>',{ data:"okbro"},
+            function(data,status){
+              loading.fadeOut();
+              tampilkan.html(data);
+              tampilkan.fadeIn(2000);
+            });
+          });
+        });
+      </script> 
+
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAgenda_pemulihan" aria-expanded="true" aria-controls="collapseAgenda_pemulihan">
         <i class="fas fa-fw fa-unlock-alt"></i>
           <span>Pemulihan Akun Tamu</span>
@@ -564,6 +630,9 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
               }else if($this->session->userdata('modal')=='ok_new2') { ?>
                 $.post('<?php echo site_url('/Frontoffice/baca_agenda_9001');?>',{ data:"okbro"},
               <?php $this->session->set_userdata('modal',NULL);$this->session->set_userdata('flag_9001',NULL);
+              }else if($this->session->userdata('modal')=='perlihatkan') { ?>
+                 $.post('<?php echo site_url('/Frontoffice/perubah_status_menjadi_dibalas');?>',{ data:"okbro"},
+              <?php $this->session->set_userdata('modal',NULL);
               }else {?>
               $.post('<?php echo site_url('/Frontoffice/tampilkan_tombol_baca_surat');?>',{ data:"okbro"},
               <?php }?>
@@ -574,7 +643,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
               });
             });
             
-          </script> 
+          </script>  
 
           <?php
           foreach($tables as $table){//xx2
@@ -586,7 +655,8 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
                       var tampilkan = $(\"#penampil_tabel\");
                       tampilkan.hide();
                       loading.fadeIn(); 
-                      $.post('".site_url("/Frontoffice/tampil_tabel_cruid/".$table."/".$fields[0]."/desc")."',{ data:\"okbro\"},
+                      $.post('".site_url("/Frontoffice/tampilkan_tabel_cruid_new_with_open/".$table."/".$fields[0]."/desc")."',{ data:\"okbro\"},
+                      //$.post('".site_url("/Frontoffice/tampil_tabel_cruid/".$table."/".$fields[0]."/desc")."',{ data:\"okbro\"},
                       function(data,status){
                         loading.fadeOut();
                         tampilkan.html(data);
@@ -1314,6 +1384,77 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 			//alert('Maaf Surat dan Berkas Anda Gagal di unggah \natau Anda Belum Unggah Surat dan Berkas');
 		}
   ?>
+  
+  <?php
+  
+    #0002kiriman_enkrip
+    if(isset($gagal)&&($gagal=='gagal')){
+      alert("Gagal mengunggah surat...");
+      $this->session->set_userdata('flag0002',NULL);
+    }else{
+      if(isset($kiriman_enkrip)){
+        $kiriman_dekrip=$this->enkripsi->dekapsulasiData($kiriman_enkrip);
+        //print_r($kiriman_dekrip);
+        $kiriman_enkrip_29=$this->enkripsi->enkapsulasiData($kiriman_dekrip[29]);
+        $this->session->set_userdata('flag0002',NULL);
+        //Lakukan perekaman ke log surat masuk di bankdata.
+        echo "
+        <script>
+        $(document).ready(function(){
+            var tampilkan = $(\"#status_kirim_log_ke_bankdata\");
+            $.post('".$this->config->item('link_frontoffice')."index.php/Frontoffice/cari_tau_id_surat_masuk/digest_signature/".$kiriman_enkrip_29."/idsurat_masuk',{ data:\"okbro\"},
+            function(data,status){
+              $.post('".site_url('/Frontoffice/lengkapi_kiriman_untuk_log/')."',{ idsurat_masuk:data,kiriman_enkrip:\"".$kiriman_enkrip."\"},
+              function(data,status){
+                $.post('".$this->config->item('bank_data')."/index.php/Frontoffice/insersi_ke_tabel_log_surat_frontoffice/"."'+data,{ data_enkrip:data},
+                function(data,status){
+                  //tampilkan.html(data);
+                  alert('Surat sukses diunggah...');
+                });
+              });
+            });
+          });
+        </script>
+        ";
+      }
+    }
+    
+    #end0002kiriman_enkrip
+  ?>
+
+  <!--Untuk menampilkan nota pdf tanda bukti unggah surat di frontoffice -->
+  <!--#0004-->
+  <?php
+  if(isset($data_kiriman_enkrip_f)&&isset($date_note_enkrip_f)){
+    #dekap dulu bari ambil digest lalu kirim ke frontoffice untuk cek id.
+    $kiriman_dekrip=$this->enkripsi->dekapsulasiData($data_kiriman_enkrip_f);
+    $kiriman_enkrip_signature=$this->enkripsi->enkapsulasiData($kiriman_dekrip['signature']);
+    
+    echo "
+			<script>
+			$(document).ready(function(){
+					var loading = $(\"#pra_tabel\");
+          var tampilkan = $(\"#penampil_tabel\");
+          loading.fadeIn();
+          tampilkan.fadeOut();
+          $.post('".$this->config->item('link_frontoffice')."index.php/Frontoffice/cari_tau_id_surat_masuk/digest_signature/".$kiriman_enkrip_signature."/idsurat_masuk',{ data:\"okbro\"},
+          function(data_id,status){
+              $.post('".site_url("/Frontoffice/penampil_nota_pdf_bukti_unggah_frontoffice/").$data_kiriman_enkrip_f."/".$date_note_enkrip_f."/"."'+data_id,{selected:\"okbro\"},
+              function(data,status){
+                loading.fadeOut();
+                tampilkan.html(data);
+                tampilkan.fadeIn(2000);
+              });
+          });
+			});
+			</script>
+    ";
+    
+  }
+  ?>
+  <!--End menampilkan pdf-->
+  <!--#end0004-->
+
   <script>
   if ( window.history.replaceState ) {
     window.history.replaceState( null, null, window.location.href );

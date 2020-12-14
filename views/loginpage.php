@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- Head -->
 
 <head>
-    <title>Frontoffice e-Office BKD Provinsi Sulawesi Selatan</title>
+    <title>Frontoffice e-Office <?php echo $this->config->item('nama_opd'); ?> Provinsi Sulawesi Selatan</title>
     <!-- Meta-Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		<div class="bottom-grid">
 			<div class="logo">
-				<h1> <img src="<?php echo base_url('/assets/images/logo_sulsel.png');?>" class="logo_sulsel" style="float:left;margin-right:10px;" /><a href="index.php">e-Office BKD Prov. Sulsel</a></h1>
+				<h1> <img src="<?php echo base_url('/assets/images/logo_sulsel.png');?>" class="logo_sulsel" style="float:left;margin-right:10px;" /><a href="index.php">e-Office <?php echo $this->config->item('nama_opd'); ?> Prov. Sulsel</a></h1>
 			</div>
 			<div class="links" >
 				<ul class="links-unordered-list">
@@ -95,20 +95,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<label class="switch">
 								<input type="checkbox" name="remember_me">
 								<span class="slider round" ></span>
-								<span style='color:white;'>Ingat Ka'</span>
+								<span style='color:white;'>Remember me</span>
 							</label>
 						</li>
 						<li>
-							<a href="#" class="text-right" >Kulupai Sandina</a>
+							<a href="#" class="text-right" data-toggle="modal" data-target="#myModal3"><span style="color:white;">Forgot password</span></a>
 						</li>
 						<li class="clearfix"></li>
 					</ul>
-					<ul class="list-login-bottom">
+					<ul class="list-login">
 						<li class="">
 							<a href="#" class="" data-toggle="modal" data-target="#myModal">Register</a>
 						</li>
 						<li class="">
-							<a href="#" class="text-right" data-toggle="modal" data-target="#myModal2">Butuh Bantuan?</a>
+							<a href="#" class="" data-toggle="modal" data-target="#myModal2"><span style="color:white;">Butuh Bantuan?</span></a>
 						</li>
 						<li class="clearfix"></li>
 					</ul>
@@ -116,21 +116,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 		</div>
 		<div class="bottom-grid1">
-			<div class="links">
-				<ul class="links-unordered-list">
-					<li class="">
-						<a href="#" class="">About Us</a>
-					</li>
-					<li class="">
-						<a href="#" class="">Privacy Policy</a>
-					</li>
-					<li class="">
-						<a href="#" class="">Terms of Use</a>
-					</li>
-				</ul>
-			</div>
-			<div class="copyright">
-				<p>© 2020 BKD Prov. Sulsel | Design:
+			<div class="copyright" >
+				<p style="font-size:5px;">© 2020 <?php echo $this->config->item('nama_opd'); ?> Prov. Sulsel | Design:
 					<a href="http://w3layouts.com">W3layouts</a>
 				</p>
 			</div>
@@ -147,11 +134,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
 		<h5 class="modal-title">
 			<img src="<?php echo base_url('/assets/assets_login/images/LogoSulselH.png');?>" class="logo_sulsel" style="height:40px;width:auto;float:left;margin-right:20px;" />
-			e-Office BKD Prov. Sulsel
+			e-Office <?php echo $this->config->item('nama_opd'); ?> Prov. Sulsel
 		</h5>
 		</div>
 		<div class="modal-body">
-		<p>Silahkan mendaftar manual ke admin BKD untuk mendapatkan password</p>
+		<p>Silahkan mendaftar manual ke admin <?php echo $this->config->item('nama_opd'); ?> untuk mendapatkan password</p>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+		</div>
+	</div>
+	</div>
+</div>	
+
+<div class="modal fade" id="myModal3" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content" style='background-color: rgba(200, 200, 200, 0.95);'>
+		<div class="modal-header">
+		<!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+		<h5 class="modal-title">
+			<img src="<?php echo base_url('/assets/assets_login/images/LogoSulselH.png');?>" class="logo_sulsel" style="height:40px;width:auto;float:left;margin-right:20px;" />
+			e-Office <?php echo $this->config->item('nama_opd'); ?> Prov. Sulsel
+		</h5>
+		</div>
+		<div class="modal-body">
+		<p>Silahkan menghubungi super admin, password hanya dapat diberikan secara manual</p>
 		</div>
 		<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
@@ -169,7 +177,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
 		<h5 class="modal-title">
 			<img src="<?php echo base_url('/assets/assets_login/images/LogoSulselH.png');?>" class="logo_sulsel" style="height:40px;width:auto;float:left;margin-right:20px;" />
-			e-Office BKD Prov. Sulsel
+			e-Office <?php echo $this->config->item('nama_opd'); ?> Prov. Sulsel
 		</h5>
 		</div>
 		<div class="modal-body">

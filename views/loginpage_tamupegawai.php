@@ -29,6 +29,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <!--fonts -->
     <!-- //fonts -->
     <link rel="stylesheet" href="<?php echo base_url('assets/assets_login/css/font-awesome.min.css');?>" type="text/css" media="all">
+  	<link href="<?php echo base_url('/dashboard/vendor/fontawesome-free/css/all.min.css');?>" rel="stylesheet" type="text/css">
     <!-- //Font-Awesome-File-Links -->
 	
 	<!-- Google fonts -->
@@ -61,7 +62,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<a href="<?php echo site_url('welcome/about'); ?>" class="" ><span style='color:white;'>About Us</span></a>
 					</li>
 					<li class="active">
-						<a href="#" class="" data-toggle="modal" data-target="#myModal">Register</a>
+						<a href="#" class="register" data-toggle="modal" data-target="#myModal">Register</a>
 					</li>
 					<li class="active">
 						<a href="<?php echo site_url('welcome/contact'); ?>" class="">Contact</a>
@@ -108,7 +109,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<a href="#" class="text-right" data-toggle="modal" data-target="#myModal2">Butuh Bantuan?</a>
 						</li>
 						<li class="">
-							<a href="#" class="" id="register" data-toggle="modal" data-target="#myModal"><span style='color:white;'>Register</span></a>
+							<a href="#" class="register" id="register" data-toggle="modal" data-target="#myModal"><span style='color:white;'>Register</span></a>
 						</li>
 						<li class="clearfix"></li>
 					</ul>
@@ -128,7 +129,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script>      
 $(document).ready(function(){
-	$("#register").click(function(){
+	$(".register").click(function(){
 		var loading = $("#pra_register");
 		var tampilkan = $("#penampil_register");
 		tampilkan.hide();
